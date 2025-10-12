@@ -6,7 +6,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controls", "Controls", "{5C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamPlayerCore.WinForms.Control", "StreamPlayerCore.WinForms.Control\StreamPlayerCore.WinForms.Control.csproj", "{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEye.Controls.Wpf.StreamPlayerControl", "StreamPlayerCore.WPF.Control\WebEye.Controls.Wpf.StreamPlayerControl.csproj", "{AD063357-E96C-4920-9A05-D34633058162}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamPlayerCore.WPF.Control", "StreamPlayerCore.WPF.Control\StreamPlayerCore.WPF.Control.csproj", "{AD063357-E96C-4920-9A05-D34633058162}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{52F020B4-2954-44C2-9BBF-BB410735FA5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -16,8 +18,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Release|Any CPU.ActiveCfg = Release|Win32
 		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Release|Any CPU.Build.0 = Release|Win32
-		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Debug|Any CPU.ActiveCfg = Release|Win32
-		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Debug|Any CPU.Build.0 = Release|Win32
+		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Debug|Any CPU.ActiveCfg = Release|x64
+		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Debug|Any CPU.Build.0 = Release|x64
 		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Release|Any CPU.ActiveCfg = Release|Any CPU

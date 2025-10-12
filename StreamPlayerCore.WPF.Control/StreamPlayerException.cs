@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace WebEye.Controls.Wpf.StreamPlayerControl
+namespace StreamPlayerCore.WPF.Control
 {
     /// <summary>
     /// Represents the exception thrown when the stream player fails.

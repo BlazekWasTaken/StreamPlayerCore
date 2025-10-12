@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WebEye.Controls.Wpf.StreamPlayerControl.Properties {
+namespace StreamPlayerCore.WPF.Control.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WebEye.Controls.Wpf.StreamPlayerControl.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WebEye.Controls.Wpf.StreamPlayerControl.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("StreamPlayerCore.WPF.Control.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

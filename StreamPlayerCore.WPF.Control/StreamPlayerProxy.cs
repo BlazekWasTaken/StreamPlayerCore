@@ -4,10 +4,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
-using WebEye.Controls.Wpf.StreamPlayerControl.Properties;
+using StreamPlayerCore.WPF.Control.Properties;
 using Size = System.Windows.Size;
 
-namespace WebEye.Controls.Wpf.StreamPlayerControl
+namespace StreamPlayerCore.WPF.Control
 {
     /// <summary>
     /// Forwards calls to the stream player library.
