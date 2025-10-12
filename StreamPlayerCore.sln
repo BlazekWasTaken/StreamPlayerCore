@@ -6,22 +6,29 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controls", "Controls", "{5C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamPlayerCore.WinForms.Control", "StreamPlayerCore.WinForms.Control\StreamPlayerCore.WinForms.Control.csproj", "{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEye.Controls.Wpf.StreamPlayerControl", "StreamPlayerCore.WPF.Control\WebEye.Controls.Wpf.StreamPlayerControl.csproj", "{AD063357-E96C-4920-9A05-D34633058162}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Debug|Any CPU.Build.0 = Debug|Win32
 		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Release|Any CPU.ActiveCfg = Release|Win32
 		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Release|Any CPU.Build.0 = Release|Win32
+		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Debug|Any CPU.ActiveCfg = Release|Win32
+		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Debug|Any CPU.Build.0 = Release|Win32
 		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD063357-E96C-4920-9A05-D34633058162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD063357-E96C-4920-9A05-D34633058162}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD063357-E96C-4920-9A05-D34633058162}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD063357-E96C-4920-9A05-D34633058162}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE} = {5CB98A58-E7B3-4399-A3A8-7424AF650BA3}
+		{AD063357-E96C-4920-9A05-D34633058162} = {5CB98A58-E7B3-4399-A3A8-7424AF650BA3}
 	EndGlobalSection
 EndGlobal
