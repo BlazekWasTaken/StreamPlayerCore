@@ -1,0 +1,212 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <ItemGroup Label="ProjectConfigurations">
+        <ProjectConfiguration Include="Debug|Win32">
+            <Configuration>Debug</Configuration>
+            <Platform>Win32</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Debug|x64">
+            <Configuration>Debug</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Release|Win32">
+            <Configuration>Release</Configuration>
+            <Platform>Win32</Platform>
+        </ProjectConfiguration>
+        <ProjectConfiguration Include="Release|x64">
+            <Configuration>Release</Configuration>
+            <Platform>x64</Platform>
+        </ProjectConfiguration>
+    </ItemGroup>
+    <PropertyGroup Label="Globals">
+        <ProjectGuid>{88B5FE76-45CF-4124-8E12-20C640DDB028}</ProjectGuid>
+        <Keyword>Win32Proj</Keyword>
+        <RootNamespace>RtspUtils</RootNamespace>
+        <ProjectName>StreamPlayer</ProjectName>
+        <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    </PropertyGroup>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+        <ConfigurationType>DynamicLibrary</ConfigurationType>
+        <UseDebugLibraries>true</UseDebugLibraries>
+        <PlatformToolset>v143</PlatformToolset>
+        <CharacterSet>Unicode</CharacterSet>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+        <ConfigurationType>DynamicLibrary</ConfigurationType>
+        <UseDebugLibraries>true</UseDebugLibraries>
+        <PlatformToolset>v143</PlatformToolset>
+        <CharacterSet>Unicode</CharacterSet>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+        <ConfigurationType>DynamicLibrary</ConfigurationType>
+        <UseDebugLibraries>false</UseDebugLibraries>
+        <PlatformToolset>v143</PlatformToolset>
+        <WholeProgramOptimization>true</WholeProgramOptimization>
+        <CharacterSet>Unicode</CharacterSet>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+        <ConfigurationType>DynamicLibrary</ConfigurationType>
+        <UseDebugLibraries>false</UseDebugLibraries>
+        <PlatformToolset>v143</PlatformToolset>
+        <WholeProgramOptimization>true</WholeProgramOptimization>
+        <CharacterSet>Unicode</CharacterSet>
+    </PropertyGroup>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props"/>
+    <ImportGroup Label="ExtensionSettings">
+    </ImportGroup>
+    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    </ImportGroup>
+    <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    </ImportGroup>
+    <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    </ImportGroup>
+    <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+        <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform"/>
+    </ImportGroup>
+    <PropertyGroup Label="UserMacros"/>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+        <LinkIncremental>true</LinkIncremental>
+        <IncludePath>C:\WebEye-build-32\boost_1_89_0;C:\Users\blazej\FFmpeg32;$(IncludePath)</IncludePath>
+        <LibraryPath>C:\WebEye-build-32\boost_1_89_0\stage\lib;C:\Users\blazej\FFmpeg32\libavformat;C:\Users\blazej\FFmpeg32\libswscale;C:\Users\blazej\FFmpeg32\libswresample;C:\Users\blazej\FFmpeg32\libavutil;C:\Users\blazej\FFmpeg32\libavfilter;C:\Users\blazej\FFmpeg32\libavdevice;C:\Users\blazej\FFmpeg32\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;$(LibraryPath)</LibraryPath>
+        <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+        <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <LinkIncremental>true</LinkIncremental>
+        <IncludePath>C:\WebEye-build-64\boost_1_89_0;C:\Users\blazej\FFmpeg64;$(IncludePath)</IncludePath>
+        <LibraryPath>C:\WebEye-build-64\boost_1_89_0\stage\lib;C:\Users\blazej\FFmpeg64\libavformat;C:\Users\blazej\FFmpeg64\libswscale;C:\Users\blazej\FFmpeg64\libswresample;C:\Users\blazej\FFmpeg64\libavutil;C:\Users\blazej\FFmpeg64\libavfilter;C:\Users\blazej\FFmpeg64\libavdevice;C:\Users\blazej\FFmpeg64\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64;$(LibraryPath)</LibraryPath>
+        <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+        <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+        <LinkIncremental>false</LinkIncremental>
+        <IncludePath>C:\WebEye-build-32\boost_1_89_0;C:\Users\blazej\FFmpeg32;$(IncludePath)</IncludePath>
+        <LibraryPath>C:\WebEye-build-32\boost_1_89_0\stage\lib;C:\Users\blazej\FFmpeg32\libavformat;C:\Users\blazej\FFmpeg32\libswscale;C:\Users\blazej\FFmpeg32\libswresample;C:\Users\blazej\FFmpeg32\libavutil;C:\Users\blazej\FFmpeg32\libavfilter;C:\Users\blazej\FFmpeg32\libavdevice;C:\Users\blazej\FFmpeg32\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;$(LibraryPath)</LibraryPath>
+        <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+        <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <LinkIncremental>false</LinkIncremental>
+        <IncludePath>C:\WebEye-build-64\boost_1_89_0;C:\Users\blazej\FFmpeg64;$(IncludePath)</IncludePath>
+        <LibraryPath>C:\WebEye-build-64\boost_1_89_0\stage\lib;C:\Users\blazej\FFmpeg64\libavformat;C:\Users\blazej\FFmpeg64\libswscale;C:\Users\blazej\FFmpeg64\libswresample;C:\Users\blazej\FFmpeg64\libavutil;C:\Users\blazej\FFmpeg64\libavfilter;C:\Users\blazej\FFmpeg64\libavdevice;C:\Users\blazej\FFmpeg64\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64;$(LibraryPath)</LibraryPath>
+        <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+        <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    </PropertyGroup>
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+        <ClCompile>
+            <PrecompiledHeader>
+            </PrecompiledHeader>
+            <WarningLevel>Level4</WarningLevel>
+            <Optimization>Disabled</Optimization>
+            <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <SDLCheck>true</SDLCheck>
+            <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+            <LanguageStandard>stdcpp20</LanguageStandard>
+            <LanguageStandard_C>stdc17</LanguageStandard_C>
+        </ClCompile>
+        <Link>
+            <SubSystem>Console</SubSystem>
+            <GenerateDebugInformation>true</GenerateDebugInformation>
+            <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+            <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+            <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
+            <ModuleDefinitionFile>StreamPlayer.def</ModuleDefinitionFile>
+        </Link>
+    </ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <ClCompile>
+            <PrecompiledHeader>
+            </PrecompiledHeader>
+            <WarningLevel>Level4</WarningLevel>
+            <Optimization>Disabled</Optimization>
+            <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <SDLCheck>true</SDLCheck>
+            <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+            <LanguageStandard>stdcpp20</LanguageStandard>
+            <LanguageStandard_C>stdc17</LanguageStandard_C>
+        </ClCompile>
+        <Link>
+            <SubSystem>Console</SubSystem>
+            <GenerateDebugInformation>true</GenerateDebugInformation>
+            <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+            <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+            <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
+            <ModuleDefinitionFile>StreamPlayer.def</ModuleDefinitionFile>
+        </Link>
+    </ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+        <ClCompile>
+            <WarningLevel>Level4</WarningLevel>
+            <PrecompiledHeader>
+            </PrecompiledHeader>
+            <Optimization>MaxSpeed</Optimization>
+            <FunctionLevelLinking>true</FunctionLevelLinking>
+            <IntrinsicFunctions>true</IntrinsicFunctions>
+            <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <SDLCheck>true</SDLCheck>
+            <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+            <LanguageStandard>stdcpp20</LanguageStandard>
+            <LanguageStandard_C>stdc17</LanguageStandard_C>
+        </ClCompile>
+        <Link>
+            <SubSystem>Console</SubSystem>
+            <GenerateDebugInformation>true</GenerateDebugInformation>
+            <EnableCOMDATFolding>true</EnableCOMDATFolding>
+            <OptimizeReferences>true</OptimizeReferences>
+            <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+            <IgnoreSpecificDefaultLibraries>
+            </IgnoreSpecificDefaultLibraries>
+            <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+            <ModuleDefinitionFile>StreamPlayer.def</ModuleDefinitionFile>
+        </Link>
+    </ItemDefinitionGroup>
+    <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+        <ClCompile>
+            <WarningLevel>Level4</WarningLevel>
+            <PrecompiledHeader>
+            </PrecompiledHeader>
+            <Optimization>MaxSpeed</Optimization>
+            <FunctionLevelLinking>true</FunctionLevelLinking>
+            <IntrinsicFunctions>true</IntrinsicFunctions>
+            <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+            <SDLCheck>true</SDLCheck>
+            <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+            <LanguageStandard>stdcpp20</LanguageStandard>
+            <LanguageStandard_C>stdc17</LanguageStandard_C>
+        </ClCompile>
+        <Link>
+            <SubSystem>Console</SubSystem>
+            <GenerateDebugInformation>true</GenerateDebugInformation>
+            <EnableCOMDATFolding>true</EnableCOMDATFolding>
+            <OptimizeReferences>true</OptimizeReferences>
+            <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+            <IgnoreSpecificDefaultLibraries>
+            </IgnoreSpecificDefaultLibraries>
+            <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+            <ModuleDefinitionFile>StreamPlayer.def</ModuleDefinitionFile>
+        </Link>
+    </ItemDefinitionGroup>
+    <ItemGroup>
+        <ClCompile Include="Stream.cpp"/>
+        <ClCompile Include="dllmain.cpp"/>
+        <ClCompile Include="Frame.cpp"/>
+        <ClCompile Include="StreamPlayer.cpp"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="StreamPlayer.def"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ClInclude Include="ConcurrentQueue.h"/>
+        <ClInclude Include="Stream.h"/>
+        <ClInclude Include="Frame.h"/>
+        <ClInclude Include="StreamPlayer.h"/>
+    </ItemGroup>
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
+    <ImportGroup Label="ExtensionTargets">
+    </ImportGroup>
+</Project>
