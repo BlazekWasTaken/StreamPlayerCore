@@ -71,29 +71,29 @@
     <PropertyGroup Label="UserMacros"/>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
         <LinkIncremental>true</LinkIncremental>
-        <IncludePath>C:\WebEye-build-32\boost_1_89_0;C:\Users\blazej\FFmpeg32;$(IncludePath)</IncludePath>
-        <LibraryPath>C:\WebEye-build-32\boost_1_89_0\stage\lib;C:\Users\blazej\FFmpeg32\libavformat;C:\Users\blazej\FFmpeg32\libswscale;C:\Users\blazej\FFmpeg32\libswresample;C:\Users\blazej\FFmpeg32\libavutil;C:\Users\blazej\FFmpeg32\libavfilter;C:\Users\blazej\FFmpeg32\libavdevice;C:\Users\blazej\FFmpeg32\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;$(LibraryPath)</LibraryPath>
+        <IncludePath>C:\StreamPlayerCore-build\boost_1_89_0;C:\StreamPlayerCore-build\FFmpeg32;$(IncludePath)</IncludePath>
+        <LibraryPath>C:\StreamPlayerCore-build\boost_1_89_0\stage\lib;C:\StreamPlayerCore-build\FFmpeg32\libavformat;C:\StreamPlayerCore-build\FFmpeg32\libswscale;C:\StreamPlayerCore-build\FFmpeg32\libswresample;C:\StreamPlayerCore-build\FFmpeg32\libavutil;C:\StreamPlayerCore-build\FFmpeg32\libavfilter;C:\StreamPlayerCore-build\FFmpeg32\libavdevice;C:\StreamPlayerCore-build\FFmpeg32\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;$(LibraryPath)</LibraryPath>
         <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
         <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
         <LinkIncremental>true</LinkIncremental>
-        <IncludePath>C:\WebEye-build-64\boost_1_89_0;C:\Users\blazej\FFmpeg64;$(IncludePath)</IncludePath>
-        <LibraryPath>C:\WebEye-build-64\boost_1_89_0\stage\lib;C:\Users\blazej\FFmpeg64\libavformat;C:\Users\blazej\FFmpeg64\libswscale;C:\Users\blazej\FFmpeg64\libswresample;C:\Users\blazej\FFmpeg64\libavutil;C:\Users\blazej\FFmpeg64\libavfilter;C:\Users\blazej\FFmpeg64\libavdevice;C:\Users\blazej\FFmpeg64\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64;$(LibraryPath)</LibraryPath>
+        <IncludePath>C:\StreamPlayerCore-build\boost_1_89_0;C:\StreamPlayerCore-build\FFmpeg64;$(IncludePath)</IncludePath>
+        <LibraryPath>C:\StreamPlayerCore-build\boost_1_89_0\stage\lib;C:\StreamPlayerCore-build\FFmpeg64\libavformat;C:\StreamPlayerCore-build\FFmpeg64\libswscale;C:\StreamPlayerCore-build\FFmpeg64\libswresample;C:\StreamPlayerCore-build\FFmpeg64\libavutil;C:\StreamPlayerCore-build\FFmpeg64\libavfilter;C:\StreamPlayerCore-build\FFmpeg64\libavdevice;C:\StreamPlayerCore-build\FFmpeg64\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64;$(LibraryPath)</LibraryPath>
         <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
         <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
         <LinkIncremental>false</LinkIncremental>
-        <IncludePath>C:\WebEye-build-32\boost_1_89_0;C:\Users\blazej\FFmpeg32;$(IncludePath)</IncludePath>
-        <LibraryPath>C:\WebEye-build-32\boost_1_89_0\stage\lib;C:\Users\blazej\FFmpeg32\libavformat;C:\Users\blazej\FFmpeg32\libswscale;C:\Users\blazej\FFmpeg32\libswresample;C:\Users\blazej\FFmpeg32\libavutil;C:\Users\blazej\FFmpeg32\libavfilter;C:\Users\blazej\FFmpeg32\libavdevice;C:\Users\blazej\FFmpeg32\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;$(LibraryPath)</LibraryPath>
+        <IncludePath>C:\StreamPlayerCore-build\boost_1_89_0;C:\StreamPlayerCore-build\FFmpeg32;$(IncludePath)</IncludePath>
+        <LibraryPath>C:\StreamPlayerCore-build\boost_1_89_0\stage\lib;C:\StreamPlayerCore-build\FFmpeg32\libavformat;C:\StreamPlayerCore-build\FFmpeg32\libswscale;C:\StreamPlayerCore-build\FFmpeg32\libswresample;C:\StreamPlayerCore-build\FFmpeg32\libavutil;C:\StreamPlayerCore-build\FFmpeg32\libavfilter;C:\StreamPlayerCore-build\FFmpeg32\libavdevice;C:\StreamPlayerCore-build\FFmpeg32\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86;$(LibraryPath)</LibraryPath>
         <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
         <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
         <LinkIncremental>false</LinkIncremental>
-        <IncludePath>C:\WebEye-build-64\boost_1_89_0;C:\Users\blazej\FFmpeg64;$(IncludePath)</IncludePath>
-        <LibraryPath>C:\WebEye-build-64\boost_1_89_0\stage\lib;C:\Users\blazej\FFmpeg64\libavformat;C:\Users\blazej\FFmpeg64\libswscale;C:\Users\blazej\FFmpeg64\libswresample;C:\Users\blazej\FFmpeg64\libavutil;C:\Users\blazej\FFmpeg64\libavfilter;C:\Users\blazej\FFmpeg64\libavdevice;C:\Users\blazej\FFmpeg64\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64;$(LibraryPath)</LibraryPath>
+        <IncludePath>C:\StreamPlayerCore-build\boost_1_89_0;C:\StreamPlayerCore-build\FFmpeg64;$(IncludePath)</IncludePath>
+        <LibraryPath>C:\StreamPlayerCore-build\boost_1_89_0\stage\lib;C:\StreamPlayerCore-build\FFmpeg64\libavformat;C:\StreamPlayerCore-build\FFmpeg64\libswscale;C:\StreamPlayerCore-build\FFmpeg64\libswresample;C:\StreamPlayerCore-build\FFmpeg64\libavutil;C:\StreamPlayerCore-build\FFmpeg64\libavfilter;C:\StreamPlayerCore-build\FFmpeg64\libavdevice;C:\StreamPlayerCore-build\FFmpeg64\libavcodec;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64;$(LibraryPath)</LibraryPath>
         <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
         <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
     </PropertyGroup>
