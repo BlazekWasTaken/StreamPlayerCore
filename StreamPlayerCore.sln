@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StreamPlayer", "StreamPlayer\StreamPlayer.vcxproj", "{88B5FE76-45CF-4124-8E12-20C640DDB028}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Controls", "Controls", "{5CB98A58-E7B3-4399-A3A8-7424AF650BA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamPlayerCore.WinForms.Control", "StreamPlayerCore.WinForms.Control\StreamPlayerCore.WinForms.Control.csproj", "{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,12 @@ Global
 		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Debug|Any CPU.Build.0 = Debug|Win32
 		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Release|Any CPU.ActiveCfg = Release|Win32
 		{88B5FE76-45CF-4124-8E12-20C640DDB028}.Release|Any CPU.Build.0 = Release|Win32
+		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{97441E6E-DB39-4A4A-AA04-8EBB23DBA0BE} = {5CB98A58-E7B3-4399-A3A8-7424AF650BA3}
 	EndGlobalSection
 EndGlobal
