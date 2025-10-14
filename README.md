@@ -116,13 +116,13 @@ Based on the [WebEye](https://github.com/jacobbo/WebEye/tree/221e8187afdfaf0b552
 8. Add ```C:\StreamPlayerCore-build``` to your system PATH.
 9. Create an ```MSYS2_PATH_TYPE``` environment variable with the value ```inherit```.
 10. Navigate to ```C:\StreamPlayerCore-build\boost``` and run:
-   ```bash
-   .\bootstrap.bat
-   ```
-and then:
-   ```bash
-   .\b2 runtime-link=static
-   ```
+    ```bash
+    .\bootstrap.bat
+    ```
+    and then
+    ```bash 
+    .\b2 runtime-link=static
+    ```
 11. Open the ```x86 Native Tools Command Prompt for VS 2022```
 12. Navigate to ```C:\msys64``` and open the ```msys2_shell.cmd``` file.
 13. run
