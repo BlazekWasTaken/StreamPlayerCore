@@ -133,7 +133,7 @@ namespace FFmpeg
             RtspFlags flags_;
             int32_t analyzeDuration_;
             int32_t probeSize_;
-            
+
             std::chrono::time_point<std::chrono::system_clock> connectionStart_;
             std::chrono::time_point<std::chrono::system_clock> frameStart_;
             boost::barrier barrier_;

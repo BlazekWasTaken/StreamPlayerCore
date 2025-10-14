@@ -77,7 +77,7 @@ internal sealed class StreamPlayerProxy : IDisposable
                 Convert.ToInt32(streamTimeout.TotalMilliseconds),
                 Convert.ToInt32(transport),
                 Convert.ToInt32(flags),
-                 analyzeDuration,
+                analyzeDuration,
                 probeSize) != 0)
             throw new StreamPlayerException("Failed to play the stream.");
     }

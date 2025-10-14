@@ -93,7 +93,7 @@ public partial class StreamPlayerControl
     /// <exception cref="StreamPlayerException">Failed to play the stream.</exception>
     public void StartPlay(Uri uri)
     {
-        StartPlay(uri, TimeSpan.FromSeconds(5.0), TimeSpan.FromSeconds(5.0), RtspTransport.Undefined, RtspFlags.None, 0, 5000000);
+        StartPlay(uri, TimeSpan.FromSeconds(5.0), TimeSpan.FromSeconds(5.0));
     }
 
     /// <summary>
@@ -110,8 +110,8 @@ public partial class StreamPlayerControl
     /// <param name="analyzeDuration">analyzeduration parameter.</param>
     /// <param name="probeSize">probesize parameter in Bytes</param>
     public void StartPlay(Uri uri, TimeSpan connectionTimeout,
-        TimeSpan streamTimeout, RtspTransport transport, RtspFlags flags,
-        int analyzeDuration, int probeSize)
+        TimeSpan streamTimeout, RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
+        int analyzeDuration = 0, int probeSize = 5000000)
     {
         if (IsPlaying) Stop();
 

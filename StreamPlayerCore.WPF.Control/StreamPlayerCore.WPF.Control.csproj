@@ -9,11 +9,16 @@
         <Authors>Błażej Dymek</Authors>
         <Description>WPF control for video streaming using FFmpeg</Description>
         <PackageProjectUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/BlazekWasTaken/StreamPlayerCore/blob/main/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</RepositoryUrl>
         <PackageTags>Stream, RTSP, WPF, FFmpeg</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="System.Drawing.Common" Version="9.0.9"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath=""/>
+        <None Include="..\LICENSE" Pack="true" PackagePath=""/>
     </ItemGroup>
 </Project>

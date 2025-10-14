@@ -30,7 +30,8 @@ STREAMPLAYER_API int32_t __stdcall StartPlay(const char* url,
 {
     try
     {
-        player.StartPlay(url, connectionTimeoutInMilliseconds, streamTimeoutInMilliseconds, transport, flags, analyzeDuration, probeSize);
+        player.StartPlay(url, connectionTimeoutInMilliseconds, streamTimeoutInMilliseconds, transport, flags,
+                         analyzeDuration, probeSize);
     }
     catch (std::runtime_error&)
     {

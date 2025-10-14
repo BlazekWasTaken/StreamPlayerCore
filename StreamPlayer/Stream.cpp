@@ -104,10 +104,10 @@ unique_ptr<AVDictionary, std::function<void(AVDictionary*)>> Stream::GetOptions(
     {
         av_dict_set(&optionsPtr, "rtsp_flags", "prefer_tcp", 0);
     }
-    
+
     av_dict_set(&optionsPtr, "analyzeduration", std::to_string(analyzeDuration).c_str(), 0);
     av_dict_set(&optionsPtr, "probesize", std::to_string(probeSize).c_str(), 0);
-    
+
     unique_ptr<AVDictionary, std::function<void(AVDictionary*)>>
         options(optionsPtr, [](AVDictionary* ptr)
         {

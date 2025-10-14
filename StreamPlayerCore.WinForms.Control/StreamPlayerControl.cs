@@ -63,7 +63,7 @@ public partial class StreamPlayerControl : UserControl
     /// <exception cref="StreamPlayerException">Failed to play the stream.</exception>
     public void StartPlay(Uri uri, TimeSpan connectionTimeout,
         TimeSpan streamTimeout, RtspTransport transport, RtspFlags flags,
-        int analyzeDuration, int probeSize)
+        int analyzeDuration = 0, int probeSize = 5000000)
     {
         if (IsPlaying) Stop();
 
@@ -80,7 +80,7 @@ public partial class StreamPlayerControl : UserControl
     public void StartPlay(Uri uri)
     {
         StartPlay(uri, TimeSpan.FromSeconds(5.0), TimeSpan.FromSeconds(5.0),
-            RtspTransport.Undefined, RtspFlags.None, 0, 5000000);
+            RtspTransport.Undefined, RtspFlags.None);
     }
 
     /// <summary>
