@@ -1,4 +1,8 @@
 # StreamPlayerCore
+
+[![NuGet](https://img.shields.io/badge/NuGet-StreamPlayerCore.WPF.Control-004880?logo=nuget&logoColor=fff)](https://www.nuget.org/packages/StreamPlayerCore.WPF.Control/)
+[![NuGet](https://img.shields.io/badge/NuGet-StreamPlayerCore.WinForms.Control-004880?logo=nuget&logoColor=fff)](https://www.nuget.org/packages/StreamPlayerCore.WinForms.Control/)
+
 WPF and WinForms controls for video streaming using FFmpeg. Built with .Net9 and .Net Framework 4.8.
 
 Based on the [WebEye](https://github.com/jacobbo/WebEye/tree/221e8187afdfaf0b5522848832199913f46b2b7d) library.
