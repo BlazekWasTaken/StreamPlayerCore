@@ -14,17 +14,17 @@ Frame::Frame(uint32_t width, uint32_t height, double timestamp, AVFrame& avFrame
     int32_t lineSize = avFrame.linesize[0];
     uint32_t padding = GetPadding(lineSize);
 
-    pixelsPtr_ = new uint8_t[static_cast<size_t>(padding + lineSize) * static_cast<size_t>(height_)];
+    pixelsPtr_ = new uint8_t[(padding + lineSize) * height_];
 
     for (uint32_t y = 0; y < height_; ++y)
     {
         ::CopyMemory(
-            pixelsPtr_ + static_cast<size_t>(lineSize + padding) * y,
-            avFrame.data[0] + static_cast<size_t>(height_ - y - 1) * lineSize,
+            pixelsPtr_ + (lineSize + padding)* y,
+            avFrame.data[0] + (height_ - y - 1)* lineSize,
             lineSize
         );
         ::SecureZeroMemory(
-            pixelsPtr_ + static_cast<size_t>(lineSize + padding) * y + lineSize,
+            pixelsPtr_ + (lineSize + padding) * y + lineSize,
             padding
         );
     }
@@ -50,10 +50,10 @@ void Frame::Draw(HWND window)
 
     SetStretchBltMode(hdc, HALFTONE);
     StretchDIBits(hdc,
-                  static_cast<LONG>(rc.left),
-                  static_cast<LONG>(rc.top),
-                  static_cast<LONG>(rc.right - rc.left),
-                  static_cast<LONG>(rc.bottom - rc.top),
+                  rc.left,
+                  rc.top,
+                  rc.right - rc.left,
+                  rc.bottom - rc.top,
                   0, 0,
                   static_cast<LONG>(width_),
                   static_cast<LONG>(height_),
@@ -70,7 +70,7 @@ void Frame::ToBmp(uint8_t** bmpPtr)
         throw runtime_error("invalid argument");
 
     *bmpPtr =
-        static_cast<uint8_t*>(CoTaskMemAlloc(sizeof(BITMAPINFOHEADER) + static_cast<size_t>(height_) * width_ * 3));
+        static_cast<uint8_t*>(CoTaskMemAlloc(sizeof(BITMAPINFOHEADER) + height_ * width_ * 3));
 
     if (*bmpPtr == nullptr)
         throw runtime_error("CoTaskMemAlloc failed");
@@ -85,5 +85,5 @@ void Frame::ToBmp(uint8_t** bmpPtr)
     headerPtr->biCompression = BI_RGB;
 
     uint8_t* pixelsPtr = *bmpPtr + sizeof(BITMAPINFOHEADER);
-    ::CopyMemory(pixelsPtr, pixelsPtr_, static_cast<size_t>(height_) * static_cast<size_t>(width_) * 3);
+    ::CopyMemory(pixelsPtr, pixelsPtr_, height_ * width_ * 3);
 }

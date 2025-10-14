@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\StreamPlayerCore.WinForms.Control\StreamPlayerCore.WinForms.Control.csproj" />
+        <ProjectReference Include="..\StreamPlayerCore.WinForms.Control\StreamPlayerCore.WinForms.Control.csproj"/>
     </ItemGroup>
 
 </Project>

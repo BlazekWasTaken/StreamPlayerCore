@@ -1,7 +1,10 @@
-﻿namespace StreamPlayerCore.WPF.Control
+﻿namespace StreamPlayerCore.WPF.Control;
+
+public enum RtspTransport
 {
-    public enum RtspTransport 
-    {
-        Undefined = 0, Udp = 1, Tcp = 2, UdpMulticast = 3, Http = 4
-    }
+    Undefined = 0,
+    Udp = 1,
+    Tcp = 2,
+    UdpMulticast = 3,
+    Http = 4
 }

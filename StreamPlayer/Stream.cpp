@@ -105,7 +105,7 @@ unique_ptr<AVDictionary, std::function<void(AVDictionary*)>> Stream::GetOptions(
 
     av_dict_set(&optionsPtr, "analyzeduration", "100", 0);
     av_dict_set(&optionsPtr, "probesize", "32", 0);
-    
+
     unique_ptr<AVDictionary, std::function<void(AVDictionary*)>>
         options(optionsPtr, [](AVDictionary* ptr)
         {
@@ -307,11 +307,11 @@ unique_ptr<Frame> Stream::CreateFrame(AVFrame* avframePtr)
     unique_ptr<AVFrame, std::function<void(AVFrame*)>>
         avRgbFramePtr(av_frame_alloc(), [](AVFrame* ptr)
         {
-            av_freep(reinterpret_cast<void*>(&ptr->data[0]));
+            av_freep(&ptr->data[0]);
             av_frame_free(&ptr);
         });
 
-    av_image_alloc(reinterpret_cast<uint8_t**>(avRgbFramePtr->data), avRgbFramePtr->linesize,
+    av_image_alloc(avRgbFramePtr->data, avRgbFramePtr->linesize,
                    codecContext_->width, codecContext_->height, pixelFormat, 1);
 
     if (imageConvertContext_ == nullptr)

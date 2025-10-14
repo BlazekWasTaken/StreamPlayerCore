@@ -7,6 +7,6 @@
         <UseWPF>true</UseWPF>
     </PropertyGroup>
     <ItemGroup>
-      <ProjectReference Include="..\StreamPlayerCore.WPF.Control\StreamPlayerCore.WPF.Control.csproj" />
+        <ProjectReference Include="..\StreamPlayerCore.WPF.Control\StreamPlayerCore.WPF.Control.csproj"/>
     </ItemGroup>
 </Project>

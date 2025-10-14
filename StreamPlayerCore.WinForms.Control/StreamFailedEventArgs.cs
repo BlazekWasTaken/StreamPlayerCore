@@ -1,34 +1,30 @@
-﻿namespace StreamPlayerCore.WinForms.Control
+﻿using System;
+
+namespace StreamPlayerCore.WinForms.Control;
+
+/// <summary>
+///     The stream failed event args.
+/// </summary>
+public class StreamFailedEventArgs : EventArgs
 {
-    using System;
+    /// <summary>
+    ///     The _error.
+    /// </summary>
+    private readonly string _error;
 
     /// <summary>
-    /// The stream failed event args.
+    ///     Initializes a new instance of the <see cref="StreamFailedEventArgs" /> class.
     /// </summary>
-    public class StreamFailedEventArgs : EventArgs
+    /// <param name="error">
+    ///     The error message.
+    /// </param>
+    public StreamFailedEventArgs(string error)
     {
-        /// <summary>
-        /// The _error.
-        /// </summary>
-        private readonly string _error;
-
-        /// <summary>
-        /// Gets the error message.
-        /// </summary>
-        public string Error
-        {
-            get { return _error; }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamFailedEventArgs"/> class.
-        /// </summary>
-        /// <param name="error">
-        /// The error message.
-        /// </param>
-        public StreamFailedEventArgs(string error)
-        {
-            _error = error;
-        }
+        _error = error;
     }
+
+    /// <summary>
+    ///     Gets the error message.
+    /// </summary>
+    public string Error => _error;
 }
