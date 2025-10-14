@@ -69,8 +69,11 @@ namespace FFmpeg::Facade
         /// <param name="streamTimeoutInMilliseconds">The stream timeout in milliseconds.</param>
         /// <param name="transport">RTSP transport protocol.</param>
         /// <param name="flags">RTSP flags.</param>
+        /// <param name="analyzeDuration">analyzeduration parameter.</param>
+        /// <param name="probeSize">probesize parameter in Bytes</param>
         void StartPlay(const std::string& streamUrl, int32_t connectionTimeoutInMilliseconds,
-                       int32_t streamTimeoutInMilliseconds, RtspTransport transport, RtspFlags flags);
+                       int32_t streamTimeoutInMilliseconds, RtspTransport transport, RtspFlags flags,
+                       int32_t analyzeDuration, int32_t probeSize);
 
         /// <summary>
         /// Stops a stream.
@@ -103,9 +106,12 @@ namespace FFmpeg::Facade
         /// <param name="connectionTimeoutInMilliseconds">The connection timeout in milliseconds.</param>
         /// <param name="streamTimeoutInMilliseconds">The stream timeout in milliseconds.</param>
         /// <param name="transport">RTSP transport protocol.</param>
-        /// <param name="transport">RTSP flags.</param>			
+        /// <param name="transport">RTSP flags.</param>
+        /// <param name="analyzeDuration">analyzeduration parameter.</param>
+        /// <param name="probeSize">probesize parameter in Bytes</param>
         void Play(const std::string& streamUrl, int32_t connectionTimeoutInMilliseconds,
-                  int32_t streamTimeoutInMilliseconds, RtspTransport transport, RtspFlags flags);
+                  int32_t streamTimeoutInMilliseconds, RtspTransport transport, RtspFlags flags,
+                  int32_t analyzeDuration, int32_t probeSize);
 
         /// <summary>
         /// Draws a frame.

@@ -66,15 +66,20 @@ internal sealed class StreamPlayerProxy : IDisposable
     /// <param name="streamTimeout">The stream timeout.</param>
     /// <param name="transport">RTSP transport.</param>
     /// <param name="flags">RTSP flags.</param>
+    /// <param name="analyzeDuration">analyzeduration parameter.</param>
+    /// <param name="probeSize">probesize parameter in Bytes</param>
     /// <exception cref="StreamPlayerException">Failed to play the stream.</exception>
     internal void StartPlay(string url, TimeSpan connectionTimeout,
-        TimeSpan streamTimeout, RtspTransport transport, RtspFlags flags)
+        TimeSpan streamTimeout, RtspTransport transport, RtspFlags flags,
+        int analyzeDuration, int probeSize)
     {
         if (_startPlayDelegate(url,
                 Convert.ToInt32(connectionTimeout.TotalMilliseconds),
                 Convert.ToInt32(streamTimeout.TotalMilliseconds),
                 Convert.ToInt32(transport),
-                Convert.ToInt32(flags)) != 0)
+                Convert.ToInt32(flags),
+                analyzeDuration,
+                probeSize) != 0)
             throw new StreamPlayerException("Failed to play the stream.");
     }
 
@@ -222,7 +227,7 @@ internal sealed class StreamPlayerProxy : IDisposable
     private delegate int InitializeDelegate(StreamPlayerControl.StreamPlayerParams playerParams);
 
     private delegate int StartPlayDelegate([MarshalAs(UnmanagedType.LPStr)] string url,
-        int connectionTimeout, int streamTimeout, int rtspTransport, int rtspFlags);
+        int connectionTimeout, int streamTimeout, int rtspTransport, int rtspFlags, int analyzeDuration, int probeSize);
 
     private delegate int GetCurrentFrameDelegate([Out] out IntPtr dibPtr);
 

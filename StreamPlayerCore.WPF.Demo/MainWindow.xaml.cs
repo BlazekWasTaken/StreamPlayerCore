@@ -24,7 +24,7 @@ public partial class MainWindow : Window
     private void Button2_OnClick(object sender, RoutedEventArgs e)
     {
         StreamPlayerControl.StartPlay(new Uri(TextBox1.Text),
-            TimeSpan.FromSeconds(5.0), TimeSpan.FromSeconds(5.0),
-            RtspTransport.Tcp, RtspFlags.None);
+            TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(3.0),
+            RtspTransport.Tcp, RtspFlags.None, int.Parse(TextBox2.Text), int.Parse(TextBox3.Text));
     }
 }

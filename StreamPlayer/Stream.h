@@ -76,8 +76,11 @@ namespace FFmpeg
             /// <param name="transport">RTSP transport protocol.</param>
             /// <param name="flags">RTSP flags.</param>
             /// <param name="frameTimeoutInMilliseconds">The frame timeout in milliseconds.</param>
+            /// <param name="analyzeDuration">analyzeduration parameter.</param>
+            /// <param name="probeSize">probesize parameter in Bytes</param>
             Stream(std::string streamUrl, int32_t connectionTimeoutInMilliseconds,
-                   int32_t frameTimeoutInMilliseconds, RtspTransport transport, RtspFlags flags);
+                   int32_t frameTimeoutInMilliseconds, RtspTransport transport, RtspFlags flags,
+                   int32_t analyzeDuration, int32_t probeSize);
 
             /// <summary>
             /// Blocks the current thread until the stream gets opened or fails to open.
@@ -114,7 +117,7 @@ namespace FFmpeg
             std::unique_ptr<Frame> CreateFrame(AVFrame* avframePtr);
 
             std::unique_ptr<AVDictionary, std::function<void(AVDictionary*)>> GetOptions(RtspTransport transport,
-                RtspFlags flags);
+                RtspFlags flags, int32_t analyzeDuration, int32_t probeSize);
 
             static int InterruptCallback(void* ctx);
 
@@ -128,6 +131,9 @@ namespace FFmpeg
             std::chrono::milliseconds frameTimeout_;
             RtspTransport transport_;
             RtspFlags flags_;
+            int32_t analyzeDuration_;
+            int32_t probeSize_;
+            
             std::chrono::time_point<std::chrono::system_clock> connectionStart_;
             std::chrono::time_point<std::chrono::system_clock> frameStart_;
             boost::barrier barrier_;

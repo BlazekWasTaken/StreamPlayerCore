@@ -10,9 +10,11 @@ using namespace FFmpeg;
 using namespace FFmpeg::Facade;
 
 Stream::Stream(string streamUrl, int32_t connectionTimeoutInMilliseconds,
-               int32_t frameTimeoutInMilliseconds, RtspTransport transport, RtspFlags flags)
+               int32_t frameTimeoutInMilliseconds, RtspTransport transport, RtspFlags flags,
+               int32_t analyzeDuration, int32_t probeSize)
     : url_(std::move(streamUrl)), connectionTimeout_(connectionTimeoutInMilliseconds),
       frameTimeout_(frameTimeoutInMilliseconds), transport_(transport), flags_(flags),
+      analyzeDuration_(analyzeDuration), probeSize_(probeSize),
       connectionStart_((std::chrono::time_point<std::chrono::system_clock>::max)()),
       frameStart_((std::chrono::time_point<std::chrono::system_clock>::max)()),
       barrier_(2), stopRequested_(false), videoStreamIndex_(-1),
@@ -70,7 +72,7 @@ bool Stream::IsTimedOut(std::chrono::time_point<std::chrono::system_clock> start
 }
 
 unique_ptr<AVDictionary, std::function<void(AVDictionary*)>> Stream::GetOptions(RtspTransport transport,
-    RtspFlags flags)
+    RtspFlags flags, int32_t analyzeDuration, int32_t probeSize)
 {
     AVDictionary* optionsPtr = nullptr;
     if (transport == Http)
@@ -102,10 +104,10 @@ unique_ptr<AVDictionary, std::function<void(AVDictionary*)>> Stream::GetOptions(
     {
         av_dict_set(&optionsPtr, "rtsp_flags", "prefer_tcp", 0);
     }
-
-    av_dict_set(&optionsPtr, "analyzeduration", "100", 0);
-    av_dict_set(&optionsPtr, "probesize", "32", 0);
-
+    
+    av_dict_set(&optionsPtr, "analyzeduration", std::to_string(analyzeDuration).c_str(), 0);
+    av_dict_set(&optionsPtr, "probesize", std::to_string(probeSize).c_str(), 0);
+    
     unique_ptr<AVDictionary, std::function<void(AVDictionary*)>>
         options(optionsPtr, [](AVDictionary* ptr)
         {
@@ -133,7 +135,7 @@ void Stream::Open()
 
     connectionStart_ = std::chrono::system_clock::now();
 
-    auto options = GetOptions(transport_, flags_);
+    auto options = GetOptions(transport_, flags_, analyzeDuration_, probeSize_);
     auto optionsPtr = options.release();
 
     int error = avformat_open_input(&formatContextPtr, url_.c_str(), nullptr, &optionsPtr);
@@ -191,7 +193,7 @@ void Stream::Open()
         throw runtime_error("avcodec_parameters_to_context() failed: " + AvStrError(error));
     }
 
-    options = GetOptions(transport_, flags_);
+    options = GetOptions(transport_, flags_, analyzeDuration_, probeSize_);
     optionsPtr = options.release();
 
     error = avcodec_open2(codecContext.get(), codecPtr, &optionsPtr);

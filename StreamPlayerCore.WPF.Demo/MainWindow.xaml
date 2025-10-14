@@ -8,19 +8,27 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="7*" />
+            <ColumnDefinition Width="4*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="8*" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <control:StreamPlayerControl Name="StreamPlayerControl" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0"
+        <control:StreamPlayerControl Name="StreamPlayerControl" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0"
                                      Margin="10" />
-        <TextBox Name="TextBox1" Grid.Column="0" Grid.Row="1" Margin="10" />
-        <Button Name="Button1" Grid.Column="1" Grid.Row="1" Margin="10" Content="Stop" Click="Button1_OnClick" />
-        <Button Name="Button2" Grid.Column="2" Grid.Row="1" Margin="10" Content="Start" Click="Button2_OnClick" />
+        
+        <Label Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Center" Content="analyze duration"/>
+        <TextBox Name="TextBox2" Grid.Column="2" Grid.Row="1" Margin="10" VerticalContentAlignment="Center" Text="0"/>
+        <Label Grid.Column="3" Grid.Row="1" VerticalContentAlignment="Center" Content="probe size"/>
+        <TextBox Name="TextBox3" Grid.Column="4" Grid.Row="1" Margin="10" VerticalContentAlignment="Center" Text="5000000"/>
+        <TextBox Name="TextBox1" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" VerticalContentAlignment="Center" Margin="10" />
+        <Button Name="Button1" Grid.Column="3" Grid.Row="2" Margin="10" Content="Stop" Click="Button1_OnClick" />
+        <Button Name="Button2" Grid.Column="4" Grid.Row="2" Margin="10" Content="Start" Click="Button2_OnClick" />
     </Grid>
 </Window>

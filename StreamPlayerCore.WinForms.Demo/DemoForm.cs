@@ -15,8 +15,8 @@ public partial class DemoForm : Form
     private void button1_Click(object sender, EventArgs e)
     {
         streamPlayerControl2.StartPlay(new Uri(textBox1.Text),
-            TimeSpan.FromSeconds(5.0), TimeSpan.FromSeconds(5.0),
-            RtspTransport.Tcp, RtspFlags.None);
+            TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(3.0),
+            RtspTransport.Tcp, RtspFlags.None, int.Parse(textBox3.Text), int.Parse(textBox2.Text));
     }
 
     private void button2_Click(object sender, EventArgs e)

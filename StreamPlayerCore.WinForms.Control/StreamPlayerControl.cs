@@ -57,15 +57,18 @@ public partial class StreamPlayerControl : UserControl
     /// <param name="streamTimeout">The stream timeout.</param>
     /// <param name="transport">RTSP transport protocol.</param>
     /// <param name="flags">RTSP flags.</param>
+    /// <param name="analyzeDuration">analyzeduration parameter.</param>
+    /// <param name="probeSize">probesize parameter in Bytes</param>
     /// <exception cref="Win32Exception">Failed to load the FFmpeg facade dll.</exception>
     /// <exception cref="StreamPlayerException">Failed to play the stream.</exception>
     public void StartPlay(Uri uri, TimeSpan connectionTimeout,
-        TimeSpan streamTimeout, RtspTransport transport, RtspFlags flags)
+        TimeSpan streamTimeout, RtspTransport transport, RtspFlags flags,
+        int analyzeDuration, int probeSize)
     {
         if (IsPlaying) Stop();
 
         Player.StartPlay(uri.IsFile ? uri.LocalPath : uri.ToString(),
-            connectionTimeout, streamTimeout, transport, flags);
+            connectionTimeout, streamTimeout, transport, flags, analyzeDuration, probeSize);
     }
 
     /// <summary>
@@ -77,7 +80,7 @@ public partial class StreamPlayerControl : UserControl
     public void StartPlay(Uri uri)
     {
         StartPlay(uri, TimeSpan.FromSeconds(5.0), TimeSpan.FromSeconds(5.0),
-            RtspTransport.Undefined, RtspFlags.None);
+            RtspTransport.Undefined, RtspFlags.None, 0, 5000000);
     }
 
     /// <summary>
