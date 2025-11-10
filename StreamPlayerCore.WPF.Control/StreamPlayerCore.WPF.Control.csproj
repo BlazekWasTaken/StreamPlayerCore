@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net9.0-windows</TargetFramework>
+        <TargetFramework>net10.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
         <OutputType>Library</OutputType>
         <PackageId>StreamPlayerCore.WPF.Control</PackageId>
-        <Version>1.1.0</Version>
+        <Version>2.0.0-alpha.1</Version>
         <Title>StreamPlayerCore.WPF.Control</Title>
         <Authors>Błażej Dymek</Authors>
         <Description>WPF control for video streaming using FFmpeg</Description>
@@ -13,6 +13,7 @@
         <PackageTags>Stream, RTSP, WPF, FFmpeg</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <LangVersion>14</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="System.Drawing.Common" Version="9.0.9"/>
