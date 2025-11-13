@@ -1,7 +1,7 @@
 ﻿using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 
-namespace StreamPlayerCore.Control.WinForms;
+namespace StreamPlayerCore.WinForms.Control;
 
 public enum FitType
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace StreamPlayerCore.Control.WinForms;
+namespace StreamPlayerCore.WinForms.Control;
 
 partial class StreamPlayerControl
 {

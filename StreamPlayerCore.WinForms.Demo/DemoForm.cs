@@ -1,6 +1,6 @@
-using StreamPlayerCore.Control.WinForms;
+using StreamPlayerCore.WinForms.Control;
 
-namespace StreamPlayerCore.Demo.WinForms;
+namespace StreamPlayerCore.WinForms.Demo;
 
 public partial class DemoForm : Form
 {

@@ -1,4 +1,4 @@
-namespace StreamPlayerCore.Demo.WinForms;
+namespace StreamPlayerCore.WinForms.Demo;
 
 static class Program
 {

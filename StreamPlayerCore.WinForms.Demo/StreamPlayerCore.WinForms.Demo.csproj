@@ -1,21 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
         <TargetFramework>net10.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
+        <OutputType>WinExe</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Update="DemoForm.cs">
-        <SubType>Form</SubType>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\StreamPlayerCore.Control.WinForms\StreamPlayerCore.Control.WinForms.csproj" />
+      <ProjectReference Include="..\StreamPlayerCore.WinForms.Control\StreamPlayerCore.WinForms.Control.csproj" />
     </ItemGroup>
 
 </Project>
