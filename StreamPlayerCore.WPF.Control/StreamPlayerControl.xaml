@@ -6,5 +6,4 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              xmlns:local="clr-namespace:StreamPlayerCore.WPF.Control">
-    <local:VideoWindow x:Name="_videoWindow" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 </UserControl>
