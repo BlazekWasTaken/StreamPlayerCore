@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="3.119.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\StreamPlayerCore\StreamPlayerCore.csproj" />
+    </ItemGroup>
+
+</Project>

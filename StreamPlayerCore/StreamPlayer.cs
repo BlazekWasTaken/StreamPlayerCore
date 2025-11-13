@@ -23,7 +23,7 @@ public enum RtspFlags
 
 public delegate void FrameReady(SKBitmap frame);
 
-public class Player
+public class StreamPlayer
 {
     public event FrameReady? FrameReadyEvent;
     
@@ -32,7 +32,7 @@ public class Player
     private readonly unsafe AVDictionary* _optionsPtr;
     private readonly AVHWDeviceType _hwDecodeDeviceType;
     
-    public Player(string ffmpegRoot,
+    public StreamPlayer(string ffmpegRoot,
         RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
         int analyzeDuration = 0, int probeSize = 4096, 
         AVHWDeviceType hwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
@@ -145,7 +145,7 @@ public class Player
                 break;
             case RtspFlags.None:
             default:
-                throw new ArgumentOutOfRangeException(nameof(flags), flags, null);
+                break;
         }
         ffmpeg.av_dict_set(&optionsPtr, "analyzeduration", analyzeDuration.ToString(), 0);
         ffmpeg.av_dict_set(&optionsPtr, "probesize", probeSize.ToString(), 0);
