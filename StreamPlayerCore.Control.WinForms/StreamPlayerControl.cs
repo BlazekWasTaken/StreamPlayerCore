@@ -11,7 +11,7 @@ public enum FitType
 
 public partial class StreamPlayerControl : SKControl
 {
-    private StreamPlayer? _player;
+    private readonly StreamPlayer _player;
     private SKBitmap? _currentFrame;
     private FitType _fitType;
     
@@ -19,19 +19,19 @@ public partial class StreamPlayerControl : SKControl
     {
         InitializeComponent();
         PaintSurface += SkControlOnPaintSurface;
+        _player = new StreamPlayer(@"C:\Users\blazej\Desktop\ffmpeg-8.0-full_build-shared\bin", RtspTransport.Tcp);
+        _player.FrameReadyEvent += Player_FrameReadyEvent;
     }
     
     public void StartStream(string url, FitType fitType = FitType.Stretch)
     {
         _fitType = fitType;
-        _player = new StreamPlayer(@"C:\Users\blazej\Desktop\ffmpeg-8.0-full_build-shared\bin", RtspTransport.Tcp);
-        _player.FrameReadyEvent += Player_FrameReadyEvent;
         _player.Start(new Uri(url));
     }
     
     public void StopStream()
     {
-        _player = null;
+        _player.Stop();
         _currentFrame?.Dispose();
         _currentFrame = null;
         Invalidate();

@@ -34,7 +34,7 @@ public class StreamPlayer
     
     public StreamPlayer(string ffmpegRoot,
         RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
-        int analyzeDuration = 0, int probeSize = 4096, 
+        int analyzeDuration = 0, int probeSize = 65536, 
         AVHWDeviceType hwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
         int ffmpegLogLevel = ffmpeg.AV_LOG_VERBOSE)
     {
@@ -56,8 +56,17 @@ public class StreamPlayer
         Task.Run(() =>
         {
             using var vsd = new VideoStreamDecoder(streamSource.AbsoluteUri, _hwDecodeDeviceType, _optionsPtr);
-            
+        
+            if (vsd.FrameSize.Width == 0 || vsd.FrameSize.Height == 0 || vsd.PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
+            {
+                Console.WriteLine("Invalid video stream parameters. Stopping the stream.");
+                Stop();
+                return;
+            }
+        
             Console.WriteLine($"codec name: {vsd.CodecName}");
+            Console.WriteLine($"source size: {vsd.FrameSize.Width}x{vsd.FrameSize.Height}");
+            Console.WriteLine($"source pixel format: {vsd.PixelFormat}");
 
             var info = vsd.GetContextInfo();
             info.ToList().ForEach(x => Console.WriteLine($"{x.Key} = {x.Value}"));
@@ -69,8 +78,8 @@ public class StreamPlayer
             var destinationSize = sourceSize;
             var destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;
             using var vfc = new VideoFrameConverter(sourceSize, sourcePixelFormat, destinationSize, destinationPixelFormat);
-
-            while (vsd.TryDecodeNextFrame(out var frame))
+            
+            while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
             {
                 var convertedFrame = vfc.Convert(frame);
                 var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888, SKAlphaType.Opaque);
@@ -78,8 +87,7 @@ public class StreamPlayer
                 bitmap.InstallPixels(imageInfo, (IntPtr)convertedFrame.data[0]);
                 OnProcessCompleted(bitmap);
             }
-
-        }, _tokenSource.Token);
+        });
     }
 
     public void Stop()

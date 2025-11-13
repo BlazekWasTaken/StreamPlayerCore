@@ -48,13 +48,6 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
         CodecName = ffmpeg.avcodec_get_name(codec->id);
         FrameSize = new Size(_pCodecContext->width, _pCodecContext->height);
         PixelFormat = _pCodecContext->pix_fmt;
-        Console.WriteLine(PixelFormat.ToString());
-
-        if (PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
-        {
-            Console.WriteLine("Pixel format is NONE");
-            throw new Exception("Pixel format is NONE"); // TODO: create custom exception, handle it properly
-        }
         
         _pPacket = ffmpeg.av_packet_alloc();
         _pFrame = ffmpeg.av_frame_alloc();
@@ -66,6 +59,8 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
 
     public void Dispose()
     {
+        Console.WriteLine("Disposing VideoStreamDecoder...");
+        
         var pFrame = _pFrame;
         ffmpeg.av_frame_free(&pFrame);
 
