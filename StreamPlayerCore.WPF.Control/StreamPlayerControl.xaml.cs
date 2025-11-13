@@ -19,7 +19,7 @@ public partial class StreamPlayerControl
     {
         InitializeComponent();
         _player = new StreamPlayer(@"C:\Users\blazej\Desktop\ffmpeg-8.0-full_build-shared\bin", RtspTransport.Tcp);
-        _player.FrameReadyEvent += Player_FrameReadyEvent;
+        // _player.FrameReadyEvent += Player_FrameReadyEvent;
     }
     
     public void StartStream(string url, FitType fitType = FitType.Stretch)
