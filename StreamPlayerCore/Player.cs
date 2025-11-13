@@ -25,7 +25,7 @@ public delegate void FrameReady(SKBitmap frame);
 
 public class Player
 {
-    public event FrameReady? ProcessCompleted;
+    public event FrameReady? FrameReadyEvent;
     
     private readonly CancellationTokenSource _tokenSource = new();
     private bool _started;
@@ -174,6 +174,6 @@ public class Player
 
     protected virtual void OnProcessCompleted(SKBitmap frame)
     {
-        ProcessCompleted?.Invoke(frame);
+        FrameReadyEvent?.Invoke(frame);
     }
 }
