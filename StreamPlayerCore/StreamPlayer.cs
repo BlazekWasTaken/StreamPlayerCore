@@ -23,7 +23,7 @@ public enum RtspFlags
 
 public delegate void FrameReady(SKBitmap frame);
 
-public class StreamPlayer
+public sealed class StreamPlayer
 {
     public event FrameReady? FrameReadyEvent;
     
@@ -84,7 +84,18 @@ public class StreamPlayer
                 var convertedFrame = vfc.Convert(frame);
                 var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888, SKAlphaType.Opaque);
                 var bitmap = new SKBitmap();
+                
                 bitmap.InstallPixels(imageInfo, (IntPtr)convertedFrame.data[0]);
+                if (bitmap.IsEmpty || bitmap.IsNull ||
+                    bitmap.Width == 0 || bitmap.Height == 0 || 
+                    bitmap.BytesPerPixel == 0 || bitmap.RowBytes == 0 || 
+                    bitmap.Info.ColorType == SKColorType.Unknown || bitmap.Info.AlphaType == SKAlphaType.Unknown ||
+                    !bitmap.ReadyToDraw)
+                {
+                    Console.WriteLine("Invalid bitmap created from frame. Skipping frame.");
+                    bitmap.Dispose();
+                    continue;
+                }
                 OnProcessCompleted(bitmap);
             }
         });
@@ -180,7 +191,7 @@ public class StreamPlayer
         };
     }
 
-    protected virtual void OnProcessCompleted(SKBitmap frame)
+    private void OnProcessCompleted(SKBitmap frame)
     {
         FrameReadyEvent?.Invoke(frame);
     }
