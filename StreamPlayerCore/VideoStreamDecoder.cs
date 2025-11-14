@@ -22,7 +22,8 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
     private readonly AVFrame* _receivedFrame;
     private readonly int _streamIndex;
 
-    public VideoStreamDecoder(string url, AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE, AVDictionary* options = null)
+    public VideoStreamDecoder(string url, AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
+        AVDictionary* options = null)
     {
         _pFormatContext = ffmpeg.avformat_alloc_context();
         _receivedFrame = ffmpeg.av_frame_alloc();
@@ -36,10 +37,8 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
         _pCodecContext = ffmpeg.avcodec_alloc_context3(codec);
 
         if (hwDeviceType != AVHWDeviceType.AV_HWDEVICE_TYPE_NONE)
-        {
             ffmpeg.av_hwdevice_ctx_create(&_pCodecContext->hw_device_ctx, hwDeviceType, null, null, 0)
                 .ThrowExceptionIfError();
-        }
 
         ffmpeg.avcodec_parameters_to_context(_pCodecContext, _pFormatContext->streams[_streamIndex]->codecpar)
             .ThrowExceptionIfError();
@@ -48,7 +47,7 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
         CodecName = ffmpeg.avcodec_get_name(codec->id);
         FrameSize = new Size(_pCodecContext->width, _pCodecContext->height);
         PixelFormat = _pCodecContext->pix_fmt;
-        
+
         _pPacket = ffmpeg.av_packet_alloc();
         _pFrame = ffmpeg.av_frame_alloc();
     }
@@ -60,15 +59,16 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
     public void Dispose()
     {
         Console.WriteLine("Disposing VideoStreamDecoder...");
-        
+
         var pFrame = _pFrame;
         ffmpeg.av_frame_free(&pFrame);
 
         var pPacket = _pPacket;
         ffmpeg.av_packet_free(&pPacket);
 
-        AVCodecContext** @avctx = stackalloc[] { _pCodecContext };
-        ffmpeg.avcodec_free_context(@avctx);
+        var avCodecContext = stackalloc[] { _pCodecContext };
+        ffmpeg.avcodec_free_context(avCodecContext);
+
         var pFormatContext = _pFormatContext;
         ffmpeg.avformat_close_input(&pFormatContext);
     }
@@ -115,7 +115,9 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
             frame = *_receivedFrame;
         }
         else
+        {
             frame = *_pFrame;
+        }
 
         return true;
     }
@@ -129,6 +131,8 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
         {
             var key = Marshal.PtrToStringAnsi((IntPtr)tag->key);
             var value = Marshal.PtrToStringAnsi((IntPtr)tag->value);
+            if (key is null || value is null)
+                continue;
             result.Add(key, value);
         }
 

@@ -54,7 +54,7 @@ public sealed unsafe class VideoFrameConverter : IDisposable
     public void Dispose()
     {
         Console.WriteLine("Disposing VideoFrameConverter...");
-        
+
         Marshal.FreeHGlobal(_convertedFrameBufferPtr);
         ffmpeg.sws_freeContext(_pConvertContext);
     }

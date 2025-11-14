@@ -6,18 +6,18 @@ namespace StreamPlayerCore;
 
 public enum RtspTransport
 {
-    Undefined = 0, 
-    Udp = 1, 
-    Tcp = 2, 
-    UdpMulticast = 3, 
+    Undefined = 0,
+    Udp = 1,
+    Tcp = 2,
+    UdpMulticast = 3,
     Http = 4
 }
 
 public enum RtspFlags
 {
-    None = 0, 
-    FilterSrc = 1, 
-    Listen = 2, 
+    None = 0,
+    FilterSrc = 1,
+    Listen = 2,
     PreferTcp = 3
 }
 
@@ -25,15 +25,14 @@ public delegate void FrameReady(SKBitmap frame);
 
 public sealed class StreamPlayer
 {
-    public event FrameReady? FrameReadyEvent;
-    
+    private readonly AVHWDeviceType _hwDecodeDeviceType;
+    private readonly unsafe AVDictionary* _optionsPtr;
+
     private readonly CancellationTokenSource _tokenSource = new();
     private bool _started;
-    private readonly unsafe AVDictionary* _optionsPtr;
-    private readonly AVHWDeviceType _hwDecodeDeviceType;
-    
+
     public StreamPlayer(RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
-        int analyzeDuration = 0, int probeSize = 65536, 
+        int analyzeDuration = 0, int probeSize = 65536,
         AVHWDeviceType hwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
         int ffmpegLogLevel = ffmpeg.AV_LOG_VERBOSE)
     {
@@ -44,9 +43,12 @@ public sealed class StreamPlayer
         {
             _optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
         }
+
         _hwDecodeDeviceType = hwDecodeDeviceType;
         SetupLogging(ffmpegLogLevel);
     }
+
+    public event FrameReady? FrameReadyEvent;
 
     public unsafe void Start(Uri streamSource)
     {
@@ -55,14 +57,15 @@ public sealed class StreamPlayer
         Task.Run(() =>
         {
             using var vsd = new VideoStreamDecoder(streamSource.AbsoluteUri, _hwDecodeDeviceType, _optionsPtr);
-        
-            if (vsd.FrameSize.Width == 0 || vsd.FrameSize.Height == 0 || vsd.PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
+
+            if (vsd.FrameSize.Width == 0 || vsd.FrameSize.Height == 0 ||
+                vsd.PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
             {
                 Console.WriteLine("Invalid video stream parameters. Stopping the stream.");
                 Stop();
                 return;
             }
-        
+
             Console.WriteLine($"codec name: {vsd.CodecName}");
             Console.WriteLine($"source size: {vsd.FrameSize.Width}x{vsd.FrameSize.Height}");
             Console.WriteLine($"source pixel format: {vsd.PixelFormat}");
@@ -74,20 +77,23 @@ public sealed class StreamPlayer
             var sourcePixelFormat = _hwDecodeDeviceType == AVHWDeviceType.AV_HWDEVICE_TYPE_NONE
                 ? vsd.PixelFormat
                 : GetHwPixelFormat(_hwDecodeDeviceType);
+            // ReSharper disable once InlineTemporaryVariable
             var destinationSize = sourceSize;
-            var destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;
-            using var vfc = new VideoFrameConverter(sourceSize, sourcePixelFormat, destinationSize, destinationPixelFormat);
-            
+            const AVPixelFormat destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;
+            using var vfc =
+                new VideoFrameConverter(sourceSize, sourcePixelFormat, destinationSize, destinationPixelFormat);
+
             while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
             {
                 var convertedFrame = vfc.Convert(frame);
-                var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888, SKAlphaType.Opaque);
+                var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888,
+                    SKAlphaType.Opaque);
                 var bitmap = new SKBitmap();
-                
+
                 bitmap.InstallPixels(imageInfo, (IntPtr)convertedFrame.data[0]);
                 if (bitmap.IsEmpty || bitmap.IsNull ||
-                    bitmap.Width == 0 || bitmap.Height == 0 || 
-                    bitmap.BytesPerPixel == 0 || bitmap.RowBytes == 0 || 
+                    bitmap.Width == 0 || bitmap.Height == 0 ||
+                    bitmap.BytesPerPixel == 0 || bitmap.RowBytes == 0 ||
                     bitmap.Info.ColorType == SKColorType.Unknown || bitmap.Info.AlphaType == SKAlphaType.Unknown ||
                     !bitmap.ReadyToDraw)
                 {
@@ -95,7 +101,7 @@ public sealed class StreamPlayer
                     bitmap.Dispose();
                     continue;
                 }
-                
+
                 Task.Delay(5).Wait();
                 OnProcessCompleted(bitmap);
             }
@@ -108,11 +114,11 @@ public sealed class StreamPlayer
         _tokenSource.Cancel();
         _started = false;
     }
-    
+
     private static unsafe void SetupLogging(int ffmpegLogLevel)
     {
         ffmpeg.av_log_set_level(ffmpegLogLevel);
-        
+
         // ReSharper disable once ConvertToLocalFunction
         av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
         {
@@ -131,7 +137,8 @@ public sealed class StreamPlayer
         ffmpeg.av_log_set_callback(logCallback);
     }
 
-    private static unsafe AVDictionary* GetAvDict(RtspTransport transport, RtspFlags flags, int analyzeDuration, int probeSize)
+    private static unsafe AVDictionary* GetAvDict(RtspTransport transport, RtspFlags flags, int analyzeDuration,
+        int probeSize)
     {
         AVDictionary* optionsPtr = null;
         switch (transport)
@@ -152,6 +159,7 @@ public sealed class StreamPlayer
             default:
                 break;
         }
+
         switch (flags)
         {
             case RtspFlags.FilterSrc:
@@ -167,12 +175,13 @@ public sealed class StreamPlayer
             default:
                 break;
         }
+
         ffmpeg.av_dict_set(&optionsPtr, "analyzeduration", analyzeDuration.ToString(), 0);
         ffmpeg.av_dict_set(&optionsPtr, "probesize", probeSize.ToString(), 0);
 
         return optionsPtr;
     }
-    
+
     private static AVPixelFormat GetHwPixelFormat(AVHWDeviceType hWDevice)
     {
         return hWDevice switch

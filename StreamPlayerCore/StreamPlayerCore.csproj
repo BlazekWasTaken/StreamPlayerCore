@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0" />
-      <PackageReference Include="SkiaSharp" Version="3.119.1" />
+        <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0"/>
+        <PackageReference Include="SkiaSharp" Version="3.119.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="ffmpeg\**" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="ffmpeg\**" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 
 </Project>

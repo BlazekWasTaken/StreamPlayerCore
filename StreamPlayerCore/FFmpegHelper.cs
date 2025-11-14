@@ -3,20 +3,22 @@ using FFmpeg.AutoGen;
 
 namespace StreamPlayerCore;
 
-internal static class FFmpegHelper
+public class FFmpegException(int error) : ApplicationException(AvStrError(error) ?? $"FFmpeg error code: {error}")
 {
-    public static unsafe string av_strerror(int error)
+    private static unsafe string? AvStrError(int error)
     {
-        var bufferSize = 1024;
+        const int bufferSize = 1024;
         var buffer = stackalloc byte[bufferSize];
-        ffmpeg.av_strerror(error, buffer, (ulong)bufferSize);
+        ffmpeg.av_strerror(error, buffer, bufferSize);
         var message = Marshal.PtrToStringAnsi((IntPtr)buffer);
         return message;
     }
+}
 
+internal static class FFmpegHelper
+{
     public static int ThrowExceptionIfError(this int error)
     {
-        if (error < 0) throw new ApplicationException(av_strerror(error));
-        return error;
+        return error < 0 ? throw new FFmpegException(error) : error;
     }
 }
