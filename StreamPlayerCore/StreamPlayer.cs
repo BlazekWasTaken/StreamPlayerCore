@@ -95,6 +95,8 @@ public sealed class StreamPlayer
                     bitmap.Dispose();
                     continue;
                 }
+                
+                Task.Delay(5).Wait();
                 OnProcessCompleted(bitmap);
             }
         });
