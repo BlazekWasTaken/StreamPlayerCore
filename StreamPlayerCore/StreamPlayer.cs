@@ -32,13 +32,12 @@ public sealed class StreamPlayer
     private readonly unsafe AVDictionary* _optionsPtr;
     private readonly AVHWDeviceType _hwDecodeDeviceType;
     
-    public StreamPlayer(string ffmpegRoot,
-        RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
+    public StreamPlayer(RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
         int analyzeDuration = 0, int probeSize = 65536, 
         AVHWDeviceType hwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
         int ffmpegLogLevel = ffmpeg.AV_LOG_VERBOSE)
     {
-        ffmpeg.RootPath = ffmpegRoot;
+        ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg", "bin");
         DynamicallyLoadedBindings.Initialize();
         Console.WriteLine($"FFmpeg version info: {ffmpeg.av_version_info()}");
         unsafe

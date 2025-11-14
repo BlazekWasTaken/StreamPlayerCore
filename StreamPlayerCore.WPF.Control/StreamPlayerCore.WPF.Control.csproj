@@ -8,18 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\StreamPlayerCore.Helper\StreamPlayerCore.Helper.csproj" />
       <ProjectReference Include="..\StreamPlayerCore\StreamPlayerCore.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="SkiaSharp.Views.WindowsForms">
-        <HintPath>..\..\..\.nuget\packages\skiasharp.views.windowsforms\3.119.1\lib\net462\SkiaSharp.Views.WindowsForms.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="3.119.1" />
-      <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1" />
     </ItemGroup>
 
 </Project>

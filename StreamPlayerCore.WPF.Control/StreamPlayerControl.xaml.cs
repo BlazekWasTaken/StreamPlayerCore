@@ -1,13 +1,8 @@
-using SkiaSharp;
+﻿using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using StreamPlayerCore.Helper;
 
 namespace StreamPlayerCore.WPF.Control;
-
-public enum FitType
-{
-    Stretch,
-    Center
-}
 
 public partial class StreamPlayerControl
 {
@@ -18,7 +13,7 @@ public partial class StreamPlayerControl
     public StreamPlayerControl()
     {
         InitializeComponent();
-        _player = new StreamPlayer(@"C:\Users\blazej\Desktop\ffmpeg-8.0-full_build-shared\bin", RtspTransport.Tcp);
+        _player = new StreamPlayer(RtspTransport.Tcp);
         _player.FrameReadyEvent += Player_FrameReadyEvent;
     }
     
@@ -42,53 +37,9 @@ public partial class StreamPlayerControl
         _currentFrame = frame;
         Dispatcher.Invoke(SkiaControl.InvalidateVisual);
     }
-    
-    private void SkiaControl_OnPaintSurface(object? sender, SKPaintSurfaceEventArgs e)
-    {
-        var canvas = e.Surface.Canvas;
-        canvas.Clear(SKColors.Black);
 
-        if (_currentFrame == null) return;
-        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-        switch (_fitType)
-        {
-            case FitType.Center:
-                DrawCenter(canvas, e);
-                break;
-            case FitType.Stretch:
-                DrawStretch(canvas, e);
-                break;
-        }
-    }
-
-    private void DrawStretch(SKCanvas canvas, SKPaintSurfaceEventArgs e)
+    private void SkiaControl_OnPaintSurface(object? _, SKPaintSurfaceEventArgs e)
     {
-        var destRect = SKRect.Create(0, 0, e.Info.Width, e.Info.Height);
-        using var image = SKImage.FromBitmap(_currentFrame!);
-        if (image == null) return;
-        canvas.DrawImage(image, destRect);
-    }
-
-    private void DrawCenter(SKCanvas canvas, SKPaintSurfaceEventArgs e)
-    {
-        var controlAspect = (float)e.Info.Width / e.Info.Height;
-        var imageAspect = (float)_currentFrame!.Width / _currentFrame.Height;
-        SKRect destRect;
-        if (imageAspect > controlAspect)
-        {
-            var scaledHeight = e.Info.Width / imageAspect;
-            var yOffset = (e.Info.Height - scaledHeight) / 2;
-            destRect = SKRect.Create(0, yOffset, e.Info.Width, scaledHeight);
-        }
-        else
-        {
-            var scaledWidth = e.Info.Height * imageAspect;
-            var xOffset = (e.Info.Width - scaledWidth) / 2;
-            destRect = SKRect.Create(xOffset, 0, scaledWidth, e.Info.Height);
-        }
-        
-        using var image = SKImage.FromBitmap(_currentFrame);
-        if (image == null) return;
-        canvas.DrawImage(image, destRect);
+        SkiaHelper.SkControlOnPaintSurface(e, _currentFrame, _fitType);
     }
 }
