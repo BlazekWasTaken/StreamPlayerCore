@@ -16,7 +16,7 @@ Install-Package StreamPlayerCore.WinForms.Control
 
 ## Usage
 
-For a complete example of using the StreamPlayerCore WinForms control, please refer to the [StreamPlayerCore.WinForms.Demo](https://github.com/BlazekWasTaken/StreamPlayerCore/tree/main/StreamPlayerCore.WinForms.Demo) project.
+For a complete example of using the StreamPlayerCore WinForms control, please refer to the [StreamPlayerCore.WinForms.Demo](../StreamPlayerCore.WinForms.Demo) project.
 
 To use the StreamPlayerCore WinForms control, it is recommended to add a Panel to your window and place the StreamPlayerCore control inside it programatically.
 
@@ -44,4 +44,4 @@ namespace StreamPlayerCore.WinForms.Demo
 
 ## License
 
-This project is licensed under the LGPLv3 License. See the [LICENSE](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/main/LICENSE) file for details.
+This project is licensed under the LGPLv3 License. See the [LICENSE](../LICENSE) file for details.
