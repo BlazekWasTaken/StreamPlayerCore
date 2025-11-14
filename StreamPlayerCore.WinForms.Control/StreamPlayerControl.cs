@@ -67,6 +67,7 @@ public partial class StreamPlayerControl : SKControl
     {
         var destRect = SKRect.Create(0, 0, e.Info.Width, e.Info.Height);
         using var image = SKImage.FromBitmap(_currentFrame!);
+        if (image == null) return;
         canvas.DrawImage(image, destRect);
     }
 
@@ -89,6 +90,7 @@ public partial class StreamPlayerControl : SKControl
         }
         
         using var image = SKImage.FromBitmap(_currentFrame);
+        if (image == null) return;
         canvas.DrawImage(image, destRect);
     }
 }

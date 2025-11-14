@@ -64,16 +64,31 @@ public partial class StreamPlayerControl
     private void DrawStretch(SKCanvas canvas, SKPaintSurfaceEventArgs e)
     {
         var destRect = SKRect.Create(0, 0, e.Info.Width, e.Info.Height);
-        canvas.DrawBitmap(_currentFrame, destRect);
+        using var image = SKImage.FromBitmap(_currentFrame!);
+        if (image == null) return;
+        canvas.DrawImage(image, destRect);
     }
 
     private void DrawCenter(SKCanvas canvas, SKPaintSurfaceEventArgs e)
     {
-        var destRect = SKRect.Create(
-            (float)(e.Info.Width - _currentFrame!.Width) / 2,
-            (float)(e.Info.Height - _currentFrame.Height) / 2,
-            _currentFrame.Width,
-            _currentFrame.Height);
-        canvas.DrawBitmap(_currentFrame, destRect);
+        var controlAspect = (float)e.Info.Width / e.Info.Height;
+        var imageAspect = (float)_currentFrame!.Width / _currentFrame.Height;
+        SKRect destRect;
+        if (imageAspect > controlAspect)
+        {
+            var scaledHeight = e.Info.Width / imageAspect;
+            var yOffset = (e.Info.Height - scaledHeight) / 2;
+            destRect = SKRect.Create(0, yOffset, e.Info.Width, scaledHeight);
+        }
+        else
+        {
+            var scaledWidth = e.Info.Height * imageAspect;
+            var xOffset = (e.Info.Width - scaledWidth) / 2;
+            destRect = SKRect.Create(xOffset, 0, scaledWidth, e.Info.Height);
+        }
+        
+        using var image = SKImage.FromBitmap(_currentFrame);
+        if (image == null) return;
+        canvas.DrawImage(image, destRect);
     }
 }

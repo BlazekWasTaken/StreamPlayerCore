@@ -35,7 +35,7 @@ public partial class MainWindow
 
     private void BtnStart2_OnClick(object sender, RoutedEventArgs e)
     {
-        if (_player1 != null) return;
+        if (_player2 != null) return;
         var rtspUrl = TbUrl2.Text;
         _player2 = new StreamPlayerControl();
         DpPlayer2.Children.Add(_player2);
@@ -46,8 +46,7 @@ public partial class MainWindow
     {
         if (_player2 == null) return;
         _player2.StopStream();
-        DpPlayer2.Children.Remove(_player1);
-        // _player2.Dispose();
+        DpPlayer2.Children.Remove(_player2);
         _player2 = null;
     }
 }
