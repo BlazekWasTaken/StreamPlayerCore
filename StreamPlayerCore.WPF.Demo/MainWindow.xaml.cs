@@ -4,13 +4,13 @@ using StreamPlayerCore.WPF.Control;
 namespace StreamPlayerCore.WPF.Demo;
 
 /// <summary>
-/// Interaction logic for MainWindow.xaml
+///     Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow
 {
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
-    
+
     public MainWindow()
     {
         InitializeComponent();
@@ -24,7 +24,7 @@ public partial class MainWindow
         DpPlayer1.Children.Add(_player1);
         _player1.StartStream(rtspUrl);
     }
-    
+
     private void BtnStop1_OnClick(object sender, RoutedEventArgs e)
     {
         if (_player1 == null) return;

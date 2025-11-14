@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1" />
+        <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\StreamPlayerCore.Helper\StreamPlayerCore.Helper.csproj" />
-      <ProjectReference Include="..\StreamPlayerCore\StreamPlayerCore.csproj" />
+        <ProjectReference Include="..\StreamPlayerCore.Helper\StreamPlayerCore.Helper.csproj"/>
+        <ProjectReference Include="..\StreamPlayerCore\StreamPlayerCore.csproj"/>
     </ItemGroup>
 
 </Project>

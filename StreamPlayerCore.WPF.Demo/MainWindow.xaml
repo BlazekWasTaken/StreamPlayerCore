@@ -3,34 +3,33 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:StreamPlayerCore.WPF.Demo"
         mc:Ignorable="d"
         Title="MainWindow" Height="610" Width="1330">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
-        <DockPanel x:Name="DpPlayer1" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="10"/>
-        <DockPanel x:Name="DpPlayer2" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="10"/>
-        
-        <TextBox x:Name="TbUrl1" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="10"/>
-        <TextBox x:Name="TbUrl2" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Margin="10"/>
-        
-        <Button x:Name="BtnStart1" Grid.Row="2" Grid.Column="0" Margin="10" Content="Start" Click="BtnStart1_OnClick"/>
-        <Button x:Name="BtnStart2" Grid.Row="2" Grid.Column="3" Margin="10" Content="Start" Click="BtnStart2_OnClick"/>
-        
-        <Button x:Name="BtnStop1" Grid.Row="2" Grid.Column="1" Margin="10" Content="Stop" Click="BtnStop1_OnClick"/>
-        <Button x:Name="BtnStop2" Grid.Row="2" Grid.Column="4" Margin="10" Content="Stop" Click="BtnStop2_OnClick"/>
+
+        <DockPanel x:Name="DpPlayer1" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="10" />
+        <DockPanel x:Name="DpPlayer2" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="10" />
+
+        <TextBox x:Name="TbUrl1" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="10" />
+        <TextBox x:Name="TbUrl2" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Margin="10" />
+
+        <Button x:Name="BtnStart1" Grid.Row="2" Grid.Column="0" Margin="10" Content="Start" Click="BtnStart1_OnClick" />
+        <Button x:Name="BtnStart2" Grid.Row="2" Grid.Column="3" Margin="10" Content="Start" Click="BtnStart2_OnClick" />
+
+        <Button x:Name="BtnStop1" Grid.Row="2" Grid.Column="1" Margin="10" Content="Stop" Click="BtnStop1_OnClick" />
+        <Button x:Name="BtnStop2" Grid.Row="2" Grid.Column="4" Margin="10" Content="Stop" Click="BtnStop2_OnClick" />
     </Grid>
 </Window>
