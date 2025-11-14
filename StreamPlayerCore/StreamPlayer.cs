@@ -1,7 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
+using SkiaSharp;
 
 namespace StreamPlayerCore;
 
@@ -22,7 +21,7 @@ public enum RtspFlags
     PreferTcp = 3
 }
 
-public delegate void FrameReady(Bitmap frame);
+public delegate void FrameReady(SKBitmap frame);
 
 public class StreamPlayer
 {
@@ -50,7 +49,6 @@ public class StreamPlayer
         SetupLogging(ffmpegLogLevel);
     }
 
-    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
     public unsafe void Start(Uri streamSource)
     {
         if (_started) return;
@@ -58,15 +56,14 @@ public class StreamPlayer
         Task.Run(() =>
         {
             using var vsd = new VideoStreamDecoder(streamSource.AbsoluteUri, _hwDecodeDeviceType, _optionsPtr);
-
-            if (vsd.FrameSize.Width == 0 || vsd.FrameSize.Height == 0 ||
-                vsd.PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
+        
+            if (vsd.FrameSize.Width == 0 || vsd.FrameSize.Height == 0 || vsd.PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
             {
                 Console.WriteLine("Invalid video stream parameters. Stopping the stream.");
                 Stop();
                 return;
             }
-
+        
             Console.WriteLine($"codec name: {vsd.CodecName}");
             Console.WriteLine($"source size: {vsd.FrameSize.Width}x{vsd.FrameSize.Height}");
             Console.WriteLine($"source pixel format: {vsd.PixelFormat}");
@@ -80,28 +77,14 @@ public class StreamPlayer
                 : GetHwPixelFormat(_hwDecodeDeviceType);
             var destinationSize = sourceSize;
             var destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;
-            using var vfc =
-                new VideoFrameConverter(sourceSize, sourcePixelFormat, destinationSize, destinationPixelFormat);
-
+            using var vfc = new VideoFrameConverter(sourceSize, sourcePixelFormat, destinationSize, destinationPixelFormat);
+            
             while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
             {
                 var convertedFrame = vfc.Convert(frame);
-
-                var bitmap = new Bitmap(convertedFrame.width, convertedFrame.height,
-                    System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-                var bitmapData = bitmap.LockBits(new Rectangle(0, 0, convertedFrame.width, convertedFrame.height),
-                    System.Drawing.Imaging.ImageLockMode.WriteOnly, bitmap.PixelFormat);
-                
-                var dataPtr = convertedFrame.data[0];
-                
-                var length = convertedFrame.height * convertedFrame.linesize[0];
-                var byteArray = new byte[length];
-                Marshal.Copy((IntPtr)dataPtr, byteArray, 0, length);
-                Marshal.Copy(byteArray, 0, bitmapData.Scan0, length);
-                
-                bitmap.UnlockBits(bitmapData);
-                
+                var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888, SKAlphaType.Opaque);
+                var bitmap = new SKBitmap();
+                bitmap.InstallPixels(imageInfo, (IntPtr)convertedFrame.data[0]);
                 OnProcessCompleted(bitmap);
             }
         });
@@ -197,7 +180,7 @@ public class StreamPlayer
         };
     }
 
-    protected virtual void OnProcessCompleted(Bitmap frame)
+    protected virtual void OnProcessCompleted(SKBitmap frame)
     {
         FrameReadyEvent?.Invoke(frame);
     }

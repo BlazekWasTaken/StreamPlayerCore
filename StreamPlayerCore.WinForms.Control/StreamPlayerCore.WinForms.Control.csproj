@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="3.119.1" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\StreamPlayerCore\StreamPlayerCore.csproj" />
     </ItemGroup>
 
