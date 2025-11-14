@@ -6,7 +6,7 @@ public partial class DemoForm : Form
 {
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
-    
+
     public DemoForm()
     {
         InitializeComponent();

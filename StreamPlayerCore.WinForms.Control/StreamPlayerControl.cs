@@ -9,7 +9,7 @@ public partial class StreamPlayerControl : SKControl
     private readonly StreamPlayer _player;
     private SKBitmap? _currentFrame;
     private FitType _fitType;
-    
+
     public StreamPlayerControl()
     {
         InitializeComponent();
@@ -17,13 +17,13 @@ public partial class StreamPlayerControl : SKControl
         _player = new StreamPlayer(RtspTransport.Tcp);
         _player.FrameReadyEvent += Player_FrameReadyEvent;
     }
-    
+
     public void StartStream(string url, FitType fitType = FitType.Stretch)
     {
         _fitType = fitType;
         _player.Start(new Uri(url));
     }
-    
+
     public void StopStream()
     {
         _player.Stop();
@@ -36,7 +36,7 @@ public partial class StreamPlayerControl : SKControl
     {
         _currentFrame?.Dispose();
         _currentFrame = frame;
-        
+
         Invalidate();
     }
 }
