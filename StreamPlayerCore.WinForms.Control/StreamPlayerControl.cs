@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using FFmpeg.AutoGen;
+using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using StreamPlayerCore.Helper;
 
@@ -10,11 +11,14 @@ public partial class StreamPlayerControl : SKControl
     private SKBitmap? _currentFrame;
     private FitType _fitType;
 
-    public StreamPlayerControl()
+    public StreamPlayerControl(RtspTransport transport = RtspTransport.Tcp, RtspFlags flags = RtspFlags.None,
+        int analyzeDuration = 0, int probeSize = 65536,
+        AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
+        FFmpegLogLevel ffmpegLogLevel = FFmpegLogLevel.AvLogQuiet)
     {
         InitializeComponent();
         PaintSurface += (_, e) => SkiaHelper.SkControlOnPaintSurface(e, _currentFrame, _fitType);
-        _player = new StreamPlayer(RtspTransport.Tcp);
+        _player = new StreamPlayer(transport, flags, analyzeDuration, probeSize, hwDeviceType, (int)ffmpegLogLevel);
         _player.FrameReadyEvent += Player_FrameReadyEvent;
     }
 
