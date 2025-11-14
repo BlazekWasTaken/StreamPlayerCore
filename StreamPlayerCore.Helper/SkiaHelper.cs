@@ -48,7 +48,7 @@ public static class SkiaHelper
             var xOffset = (e.Info.Width - scaledWidth) / 2;
             destRect = SKRect.Create(xOffset, 0, scaledWidth, e.Info.Height);
         }
-        
+
         using var image = SKImage.FromBitmap(currentFrame);
         if (image == null) return;
         canvas.DrawImage(image, destRect);
