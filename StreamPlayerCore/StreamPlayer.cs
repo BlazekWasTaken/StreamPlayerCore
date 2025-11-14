@@ -36,7 +36,7 @@ public sealed class StreamPlayer
         AVHWDeviceType hwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
         int ffmpegLogLevel = ffmpeg.AV_LOG_VERBOSE)
     {
-        ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg", "bin");
+        ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg");
         DynamicallyLoadedBindings.Initialize();
         Console.WriteLine($"FFmpeg version info: {ffmpeg.av_version_info()}");
         unsafe

@@ -13,6 +13,8 @@
         <PackageProjectUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</PackageProjectUrl>
         <RepositoryUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</RepositoryUrl>
         <PackageTags>Stream, RTSP, FFmpeg, Skia</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,7 +23,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="ffmpeg\**" CopyToOutputDirectory="PreserveNewest"/>
+        <None Include="ffmpeg\**" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="lib\$(TargetFramework)\ffmpeg"/>
+        <None Include="..\LICENSE" Pack="true" PackagePath=""/>
+        <None Include="README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
-
+    
 </Project>
