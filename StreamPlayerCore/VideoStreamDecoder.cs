@@ -29,7 +29,7 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
     private readonly ILogger<VideoStreamDecoder> _logger;
     private readonly Guid _instanceId;
 
-    public VideoStreamDecoder(ref ILoggerFactory loggerFactory,
+    public VideoStreamDecoder(ILoggerFactory loggerFactory,
         string url, AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
         AVDictionary* options = null, Guid instanceId = default)
     {

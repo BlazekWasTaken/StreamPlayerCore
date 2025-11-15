@@ -23,6 +23,6 @@ internal static class Program
         
         var loggerFactory = new LoggerFactory().AddSerilog(serilogLogger);
         
-        Application.Run(new DemoForm(ref loggerFactory));
+        Application.Run(new DemoForm(loggerFactory));
     }
 }

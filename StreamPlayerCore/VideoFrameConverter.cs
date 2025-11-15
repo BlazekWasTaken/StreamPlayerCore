@@ -23,7 +23,7 @@ public sealed unsafe class VideoFrameConverter : IDisposable
     private readonly ILogger<VideoFrameConverter> _logger;
     private readonly Guid _instanceId;
 
-    public VideoFrameConverter(ref ILoggerFactory loggerFactory,
+    public VideoFrameConverter(ILoggerFactory loggerFactory,
         Size sourceSize, AVPixelFormat sourcePixelFormat,
         Size destinationSize, AVPixelFormat destinationPixelFormat,
         Guid instanceId = default)

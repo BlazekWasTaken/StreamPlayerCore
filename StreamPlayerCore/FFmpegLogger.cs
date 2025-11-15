@@ -13,7 +13,7 @@ public class FFmpegLogger
     private readonly ILogger<FFmpegLogger> _logger;
     private readonly Guid _instanceId;
 
-    public unsafe FFmpegLogger(ref ILoggerFactory loggerFactory, int ffmpegLogLevel, Guid instanceId)
+    public unsafe FFmpegLogger(ILoggerFactory loggerFactory, int ffmpegLogLevel, Guid instanceId)
     {
         _instanceId = instanceId;
         _logger = loggerFactory.CreateLogger<FFmpegLogger>();

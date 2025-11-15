@@ -41,7 +41,7 @@ public sealed class StreamPlayer
     private readonly ILogger<StreamPlayer> _logger;
     private readonly FFmpegLogger _ffmpegLogger;
 
-    public StreamPlayer(ref ILoggerFactory loggerFactory,
+    public StreamPlayer(ILoggerFactory loggerFactory,
         RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
         int analyzeDuration = 0, int probeSize = 65536,
         AVHWDeviceType hwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
@@ -63,7 +63,7 @@ public sealed class StreamPlayer
 
         _hwDecodeDeviceType = hwDecodeDeviceType;
 
-        _ffmpegLogger = new FFmpegLogger(ref loggerFactory, ffmpegLogLevel, _instanceId);
+        _ffmpegLogger = new FFmpegLogger(loggerFactory, ffmpegLogLevel, _instanceId);
     }
 
     public event FrameReady? FrameReadyEvent;
@@ -84,7 +84,7 @@ public sealed class StreamPlayer
         
         Task.Run(() =>
         {
-            using var vsd = new VideoStreamDecoder(ref _loggerFactory,
+            using var vsd = new VideoStreamDecoder(_loggerFactory,
                 streamSource.AbsoluteUri,
                 _hwDecodeDeviceType,
                 _optionsPtr,
@@ -115,7 +115,7 @@ public sealed class StreamPlayer
             var destinationSize = sourceSize;
             const AVPixelFormat destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;
             using var vfc =
-                new VideoFrameConverter(ref _loggerFactory,
+                new VideoFrameConverter(_loggerFactory,
                     sourceSize,
                     sourcePixelFormat,
                     destinationSize,
