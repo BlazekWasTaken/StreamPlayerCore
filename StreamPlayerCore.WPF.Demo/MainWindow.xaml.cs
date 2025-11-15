@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Microsoft.Extensions.Logging;
 using StreamPlayerCore.WPF.Control;
 
 namespace StreamPlayerCore.WPF.Demo;
@@ -11,16 +12,19 @@ public partial class MainWindow
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
 
-    public MainWindow()
+    private ILoggerFactory _loggerFactory;
+    
+    public MainWindow(ILoggerFactory loggerFactory)
     {
         InitializeComponent();
+        _loggerFactory = loggerFactory;
     }
 
     private void BtnStart1_OnClick(object sender, RoutedEventArgs e)
     {
         if (_player1 != null) return;
         var rtspUrl = TbUrl1.Text;
-        _player1 = new StreamPlayerControl();
+        _player1 = new StreamPlayerControl(ref _loggerFactory);
         DpPlayer1.Children.Add(_player1);
         _player1.StartStream(rtspUrl);
     }
@@ -37,7 +41,7 @@ public partial class MainWindow
     {
         if (_player2 != null) return;
         var rtspUrl = TbUrl2.Text;
-        _player2 = new StreamPlayerControl();
+        _player2 = new StreamPlayerControl(ref _loggerFactory);
         DpPlayer2.Children.Add(_player2);
         _player2.StartStream(rtspUrl);
     }

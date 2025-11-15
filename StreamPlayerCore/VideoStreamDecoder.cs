@@ -1,6 +1,9 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using AVCodec = FFmpeg.AutoGen.AVCodec;
 using AVCodecContext = FFmpeg.AutoGen.AVCodecContext;
 using AVDictionaryEntry = FFmpeg.AutoGen.AVDictionaryEntry;
@@ -13,6 +16,7 @@ using AVPixelFormat = FFmpeg.AutoGen.AVPixelFormat;
 
 namespace StreamPlayerCore;
 
+[SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed unsafe class VideoStreamDecoder : IDisposable
 {
     private readonly AVCodecContext* _pCodecContext;
@@ -21,10 +25,19 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
     private readonly AVPacket* _pPacket;
     private readonly AVFrame* _receivedFrame;
     private readonly int _streamIndex;
+    
+    private readonly ILogger<VideoStreamDecoder> _logger;
+    private readonly Guid _instanceId;
 
-    public VideoStreamDecoder(string url, AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-        AVDictionary* options = null)
+    public VideoStreamDecoder(ref ILoggerFactory loggerFactory,
+        string url, AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
+        AVDictionary* options = null, Guid instanceId = default)
     {
+        _logger = loggerFactory.CreateLogger<VideoStreamDecoder>();
+        _instanceId = instanceId;
+        
+        _logger.LogInformation("Stream instance: {id}; Creating VideoStreamDecoder.", _instanceId);
+        
         _pFormatContext = ffmpeg.avformat_alloc_context();
         _receivedFrame = ffmpeg.av_frame_alloc();
         var pFormatContext = _pFormatContext;
@@ -58,7 +71,7 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
 
     public void Dispose()
     {
-        Console.WriteLine("Disposing VideoStreamDecoder...");
+        _logger.LogInformation("Stream instance: {id}; Disposing VideoStreamDecoder.", _instanceId);
 
         var pFrame = _pFrame;
         ffmpeg.av_frame_free(&pFrame);

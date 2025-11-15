@@ -1,6 +1,9 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using AVFrame = FFmpeg.AutoGen.AVFrame;
 using AVPixelFormat = FFmpeg.AutoGen.AVPixelFormat;
 using SwsContext = FFmpeg.AutoGen.SwsContext;
@@ -8,6 +11,7 @@ using SwsFlags = FFmpeg.AutoGen.SwsFlags;
 
 namespace StreamPlayerCore;
 
+[SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed unsafe class VideoFrameConverter : IDisposable
 {
     private readonly IntPtr _convertedFrameBufferPtr;
@@ -15,10 +19,21 @@ public sealed unsafe class VideoFrameConverter : IDisposable
     private readonly byte_ptrArray4 _dstData;
     private readonly int_array4 _dstLineSize;
     private readonly SwsContext* _pConvertContext;
+    
+    private readonly ILogger<VideoFrameConverter> _logger;
+    private readonly Guid _instanceId;
 
-    public VideoFrameConverter(Size sourceSize, AVPixelFormat sourcePixelFormat,
-        Size destinationSize, AVPixelFormat destinationPixelFormat)
+    public VideoFrameConverter(ref ILoggerFactory loggerFactory,
+        Size sourceSize, AVPixelFormat sourcePixelFormat,
+        Size destinationSize, AVPixelFormat destinationPixelFormat,
+        Guid instanceId = default)
     {
+        _logger = loggerFactory?.CreateLogger<VideoFrameConverter>() 
+                  ?? NullLoggerFactory.Instance.CreateLogger<VideoFrameConverter>();
+        _instanceId = instanceId;
+        
+        _logger.LogInformation("Stream instance: {id}; Creating VideoFrameConverter.", _instanceId);
+        
         _destinationSize = destinationSize;
 
         _pConvertContext = ffmpeg.sws_getContext(sourceSize.Width,
@@ -53,7 +68,7 @@ public sealed unsafe class VideoFrameConverter : IDisposable
 
     public void Dispose()
     {
-        Console.WriteLine("Disposing VideoFrameConverter...");
+        _logger.LogInformation("Stream instance: {id}; Disposing VideoFrameConverter.", _instanceId);
 
         Marshal.FreeHGlobal(_convertedFrameBufferPtr);
         ffmpeg.sws_freeContext(_pConvertContext);

@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace StreamPlayerCore.WinForms.Demo;
 
 internal static class Program
@@ -11,6 +13,16 @@ internal static class Program
         // To customize application configuration such as set high DPI settings or default font,
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
-        Application.Run(new DemoForm());
+        
+        var loggerFactory = LoggerFactory.Create(static builder =>
+        {
+            builder
+                .AddFilter("Microsoft", LogLevel.Warning)
+                .AddFilter("System", LogLevel.Warning)
+                .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
+                .AddConsole();
+        });
+        
+        Application.Run(new DemoForm(ref loggerFactory));
     }
 }

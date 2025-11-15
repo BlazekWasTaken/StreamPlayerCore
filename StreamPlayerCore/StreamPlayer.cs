@@ -1,5 +1,8 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using SkiaSharp;
 
 namespace StreamPlayerCore;
@@ -23,6 +26,7 @@ public enum RtspFlags
 
 public delegate void FrameReady(SKBitmap frame);
 
+[SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed class StreamPlayer
 {
     private readonly AVHWDeviceType _hwDecodeDeviceType;
@@ -30,22 +34,36 @@ public sealed class StreamPlayer
 
     private readonly CancellationTokenSource _tokenSource = new();
     private bool _started;
+    
+    private readonly Guid _instanceId = Guid.NewGuid();
+    
+    private ILoggerFactory _loggerFactory;
+    private readonly ILogger<StreamPlayer> _logger;
+    private readonly FFmpegLogger _ffmpegLogger;
 
-    public StreamPlayer(RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
+    public StreamPlayer(ref ILoggerFactory loggerFactory,
+        RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
         int analyzeDuration = 0, int probeSize = 65536,
         AVHWDeviceType hwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
         int ffmpegLogLevel = ffmpeg.AV_LOG_VERBOSE)
     {
+        _loggerFactory = loggerFactory;
+        _logger = loggerFactory.CreateLogger<StreamPlayer>();
+        
         ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg");
         DynamicallyLoadedBindings.Initialize();
-        Console.WriteLine($"FFmpeg version info: {ffmpeg.av_version_info()}");
+        _logger.LogInformation("Stream instance: {id}; FFmpeg libraries loaded from: {ffmpegRootPath}; Version info: {ffmpegVersionInfo}",
+            _instanceId,
+            ffmpeg.RootPath,
+            ffmpeg.av_version_info());
         unsafe
         {
             _optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
         }
 
         _hwDecodeDeviceType = hwDecodeDeviceType;
-        SetupLogging(ffmpegLogLevel);
+
+        _ffmpegLogger = new FFmpegLogger(ref loggerFactory, ffmpegLogLevel, _instanceId);
     }
 
     public event FrameReady? FrameReadyEvent;
@@ -54,24 +72,40 @@ public sealed class StreamPlayer
     {
         if (_started) return;
         _started = true;
+        
+        var sourceWithoutCredentials = new UriBuilder(streamSource)
+        {
+            UserName = string.Empty,
+            Password = string.Empty
+        }.Uri;
+        _logger.LogInformation("Stream instance: {id}; Starting stream from source: {source}",
+            _instanceId,
+            sourceWithoutCredentials.ToString());
+        
         Task.Run(() =>
         {
-            using var vsd = new VideoStreamDecoder(streamSource.AbsoluteUri, _hwDecodeDeviceType, _optionsPtr);
+            using var vsd = new VideoStreamDecoder(ref _loggerFactory,
+                streamSource.AbsoluteUri,
+                _hwDecodeDeviceType,
+                _optionsPtr,
+                _instanceId);
 
             if (vsd.FrameSize.Width == 0 || vsd.FrameSize.Height == 0 ||
                 vsd.PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
             {
-                Console.WriteLine("Invalid video stream parameters. Stopping the stream.");
+                _logger.LogError("Stream instance: {id}; Invalid video stream parameters. Stopping the stream.",
+                    _instanceId);
                 Stop();
                 return;
             }
-
-            Console.WriteLine($"codec name: {vsd.CodecName}");
-            Console.WriteLine($"source size: {vsd.FrameSize.Width}x{vsd.FrameSize.Height}");
-            Console.WriteLine($"source pixel format: {vsd.PixelFormat}");
-
-            var info = vsd.GetContextInfo();
-            info.ToList().ForEach(x => Console.WriteLine($"{x.Key} = {x.Value}"));
+            
+            _logger.LogInformation("Stream instance: {id}; Video stream opened; Codec: {codecName}; " +
+                                   "Source size: {width}x{height}; Source pixel format: {pixelFormat}",
+                _instanceId,
+                vsd.CodecName,
+                vsd.FrameSize.Width,
+                vsd.FrameSize.Height,
+                vsd.PixelFormat);
 
             var sourceSize = vsd.FrameSize;
             var sourcePixelFormat = _hwDecodeDeviceType == AVHWDeviceType.AV_HWDEVICE_TYPE_NONE
@@ -81,7 +115,12 @@ public sealed class StreamPlayer
             var destinationSize = sourceSize;
             const AVPixelFormat destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;
             using var vfc =
-                new VideoFrameConverter(sourceSize, sourcePixelFormat, destinationSize, destinationPixelFormat);
+                new VideoFrameConverter(ref _loggerFactory,
+                    sourceSize,
+                    sourcePixelFormat,
+                    destinationSize,
+                    destinationPixelFormat,
+                    _instanceId);
 
             while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
             {
@@ -97,7 +136,7 @@ public sealed class StreamPlayer
                     bitmap.Info.ColorType == SKColorType.Unknown || bitmap.Info.AlphaType == SKAlphaType.Unknown ||
                     !bitmap.ReadyToDraw)
                 {
-                    Console.WriteLine("Invalid bitmap created from frame. Skipping frame.");
+                    _logger.LogError("Stream instance: {id}; Invalid bitmap created from frame. Skipping frame.", _instanceId);
                     bitmap.Dispose();
                     continue;
                 }
@@ -105,36 +144,18 @@ public sealed class StreamPlayer
                 Task.Delay(5).Wait();
                 OnProcessCompleted(bitmap);
             }
-        });
+        }, _tokenSource.Token);
     }
 
     public void Stop()
     {
         if (!_started) return;
+        
+        _logger.LogInformation("Stream instance: {id}; Stopping stream.",
+            _instanceId);
+        
         _tokenSource.Cancel();
         _started = false;
-    }
-
-    private static unsafe void SetupLogging(int ffmpegLogLevel)
-    {
-        ffmpeg.av_log_set_level(ffmpegLogLevel);
-
-        // ReSharper disable once ConvertToLocalFunction
-        av_log_set_callback_callback logCallback = (p0, level, format, vl) =>
-        {
-            if (level > ffmpeg.av_log_get_level()) return;
-
-            const int lineSize = 1024;
-            var lineBuffer = stackalloc byte[lineSize];
-            var printPrefix = 1;
-            ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
-            var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write(line);
-            Console.ResetColor();
-        };
-
-        ffmpeg.av_log_set_callback(logCallback);
     }
 
     private static unsafe AVDictionary* GetAvDict(RtspTransport transport, RtspFlags flags, int analyzeDuration,
