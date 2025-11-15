@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace StreamPlayerCore.WPF.Demo;
 
@@ -10,14 +11,13 @@ public partial class App
 {
     private void App_OnStartup(object sender, StartupEventArgs e)
     { 
-        var loggerFactory = LoggerFactory.Create(static builder =>
-        {
-            builder
-                .AddFilter("Microsoft", LogLevel.Warning)
-                .AddFilter("System", LogLevel.Warning)
-                .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
-                .AddConsole();
-        });
+        var serilogLogger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.File("log.txt", rollingInterval: RollingInterval.Minute)
+            .WriteTo.Console()
+            .CreateLogger();
+        
+        var loggerFactory = new LoggerFactory().AddSerilog(serilogLogger);
         
         var mainWindow = new MainWindow(loggerFactory);
         mainWindow.Show();

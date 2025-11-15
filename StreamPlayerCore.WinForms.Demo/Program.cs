@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace StreamPlayerCore.WinForms.Demo;
 
@@ -14,14 +15,13 @@ internal static class Program
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
         
-        var loggerFactory = LoggerFactory.Create(static builder =>
-        {
-            builder
-                .AddFilter("Microsoft", LogLevel.Warning)
-                .AddFilter("System", LogLevel.Warning)
-                .AddFilter("LoggingConsoleApp.Program", LogLevel.Debug)
-                .AddConsole();
-        });
+        var serilogLogger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.File("log.txt", rollingInterval: RollingInterval.Minute)
+            .WriteTo.Console()
+            .CreateLogger();
+        
+        var loggerFactory = new LoggerFactory().AddSerilog(serilogLogger);
         
         Application.Run(new DemoForm(ref loggerFactory));
     }
