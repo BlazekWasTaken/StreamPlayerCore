@@ -413,7 +413,6 @@ _ReSharper*/
 *.sln.iml
 
 # WPF/WinForms designer files
-*.Designer.cs
 *.resx
 *.resources
 

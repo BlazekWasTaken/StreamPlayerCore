@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PackageId>StreamPlayerCore</PackageId>
+        <Version>2.0.0</Version>
+        <Title>StreamPlayerCore</Title>
+        <Authors>Błażej Dymek</Authors>
+        <Description>C# library for video streaming based on FFmpeg.AutoGen and SkiaSharp</Description>
+        <PackageProjectUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</RepositoryUrl>
+        <PackageTags>Stream, RTSP, FFmpeg, Skia</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+        <PackageReference Include="SkiaSharp" Version="3.119.1"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="ffmpeg\**" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="lib\$(TargetFramework)\ffmpeg"/>
+        <None Include="..\LICENSE" Pack="true" PackagePath=""/>
+        <None Include="README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
+    
+</Project>

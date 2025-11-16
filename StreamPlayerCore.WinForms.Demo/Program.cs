@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Logging;
+using Serilog;
+
 namespace StreamPlayerCore.WinForms.Demo;
 
 internal static class Program
@@ -11,6 +14,15 @@ internal static class Program
         // To customize application configuration such as set high DPI settings or default font,
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
-        Application.Run(new DemoForm());
+        
+        var serilogLogger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.File("log.txt", rollingInterval: RollingInterval.Minute)
+            .WriteTo.Console()
+            .CreateLogger();
+        
+        var loggerFactory = new LoggerFactory().AddSerilog(serilogLogger);
+        
+        Application.Run(new DemoForm(loggerFactory));
     }
 }

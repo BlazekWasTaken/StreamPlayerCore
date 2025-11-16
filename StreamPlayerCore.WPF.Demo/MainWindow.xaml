@@ -3,34 +3,33 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:control="clr-namespace:StreamPlayerCore.WPF.Control;assembly=StreamPlayerCore.WPF.Control"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="610" Width="1330">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="3*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="8*" />
+            <RowDefinition Height="10*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <control:StreamPlayerControl Name="StreamPlayerControl" Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0"
-                                     Margin="10" />
+        <DockPanel x:Name="DpPlayer1" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="10" />
+        <DockPanel x:Name="DpPlayer2" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" Margin="10" />
 
-        <Label Grid.Column="1" Grid.Row="1" VerticalContentAlignment="Center" Content="analyze duration" />
-        <TextBox Name="TextBox2" Grid.Column="2" Grid.Row="1" Margin="10" VerticalContentAlignment="Center" Text="0" />
-        <Label Grid.Column="3" Grid.Row="1" VerticalContentAlignment="Center" Content="probe size" />
-        <TextBox Name="TextBox3" Grid.Column="4" Grid.Row="1" Margin="10" VerticalContentAlignment="Center"
-                 Text="5000000" />
-        <TextBox Name="TextBox1" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" VerticalContentAlignment="Center"
-                 Margin="10" />
-        <Button Name="Button1" Grid.Column="3" Grid.Row="2" Margin="10" Content="Stop" Click="Button1_OnClick" />
-        <Button Name="Button2" Grid.Column="4" Grid.Row="2" Margin="10" Content="Start" Click="Button2_OnClick" />
+        <TextBox x:Name="TbUrl1" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="10" />
+        <TextBox x:Name="TbUrl2" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3" Margin="10" />
+
+        <Button x:Name="BtnStart1" Grid.Row="2" Grid.Column="0" Margin="10" Content="Start" Click="BtnStart1_OnClick" />
+        <Button x:Name="BtnStart2" Grid.Row="2" Grid.Column="3" Margin="10" Content="Start" Click="BtnStart2_OnClick" />
+
+        <Button x:Name="BtnStop1" Grid.Row="2" Grid.Column="1" Margin="10" Content="Stop" Click="BtnStop1_OnClick" />
+        <Button x:Name="BtnStop2" Grid.Row="2" Grid.Column="4" Margin="10" Content="Stop" Click="BtnStop2_OnClick" />
     </Grid>
 </Window>

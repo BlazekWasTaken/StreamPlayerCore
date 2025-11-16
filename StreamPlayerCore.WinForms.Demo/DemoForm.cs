@@ -1,26 +1,56 @@
+using Microsoft.Extensions.Logging;
 using StreamPlayerCore.WinForms.Control;
 
 namespace StreamPlayerCore.WinForms.Demo;
 
 public partial class DemoForm : Form
 {
-    public DemoForm()
+    private StreamPlayerControl? _player1;
+    private StreamPlayerControl? _player2;
+
+    private ILoggerFactory _loggerFactory;
+
+    public DemoForm(ILoggerFactory loggerFactory)
     {
         InitializeComponent();
-        streamPlayerControl2.StreamFailed += (_, args) => Console.WriteLine(args.Error);
-        streamPlayerControl2.StreamStarted += (_, _) => Console.WriteLine("stream started");
-        streamPlayerControl2.StreamStopped += (_, _) => Console.WriteLine("stream stopped");
+        _loggerFactory = loggerFactory;
     }
 
-    private void button1_Click(object sender, EventArgs e)
+    private void btnStart1_Click(object sender, EventArgs e)
     {
-        streamPlayerControl2.StartPlay(new Uri(textBox1.Text),
-            TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(3.0),
-            RtspTransport.Tcp, RtspFlags.None, int.Parse(textBox3.Text), int.Parse(textBox2.Text));
+        if (_player1 != null) return;
+        var rtspUrl = tbUrl1.Text;
+        _player1 = new StreamPlayerControl(_loggerFactory);
+        _player1.Dock = DockStyle.Fill;
+        panel1.Controls.Add(_player1);
+        _player1.StartStream(rtspUrl);
     }
 
-    private void button2_Click(object sender, EventArgs e)
+    private void btnStop1_Click(object sender, EventArgs e)
     {
-        if (streamPlayerControl2.IsPlaying) streamPlayerControl2.Stop();
+        if (_player1 == null) return;
+        _player1.StopStream();
+        panel1.Controls.Remove(_player1);
+        _player1.Dispose();
+        _player1 = null;
+    }
+
+    private void btnStart2_Click(object sender, EventArgs e)
+    {
+        if (_player2 != null) return;
+        var rtspUrl = tbUrl2.Text;
+        _player2 = new StreamPlayerControl(_loggerFactory);
+        _player2.Dock = DockStyle.Fill;
+        panel2.Controls.Add(_player2);
+        _player2.StartStream(rtspUrl);
+    }
+
+    private void btnStop2_Click(object sender, EventArgs e)
+    {
+        if (_player2 == null) return;
+        _player2.StopStream();
+        panel2.Controls.Remove(_player2);
+        _player2.Dispose();
+        _player2 = null;
     }
 }

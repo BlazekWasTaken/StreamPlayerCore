@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Microsoft.Extensions.Logging;
 using StreamPlayerCore.WPF.Control;
 
 namespace StreamPlayerCore.WPF.Demo;
@@ -6,25 +7,50 @@ namespace StreamPlayerCore.WPF.Demo;
 /// <summary>
 ///     Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window
+public partial class MainWindow
 {
-    public MainWindow()
+    private StreamPlayerControl? _player1;
+    private StreamPlayerControl? _player2;
+
+    private ILoggerFactory _loggerFactory;
+    
+    public MainWindow(ILoggerFactory loggerFactory)
     {
         InitializeComponent();
-        StreamPlayerControl.StreamFailed += (_, args) => Console.WriteLine(args.Error);
-        StreamPlayerControl.StreamStarted += (_, _) => Console.WriteLine("stream started");
-        StreamPlayerControl.StreamStopped += (_, _) => Console.WriteLine("stream stopped");
+        _loggerFactory = loggerFactory;
     }
 
-    private void Button1_OnClick(object sender, RoutedEventArgs e)
+    private void BtnStart1_OnClick(object sender, RoutedEventArgs e)
     {
-        if (StreamPlayerControl.IsPlaying) StreamPlayerControl.Stop();
+        if (_player1 != null) return;
+        var rtspUrl = TbUrl1.Text;
+        _player1 = new StreamPlayerControl(_loggerFactory);
+        DpPlayer1.Children.Add(_player1);
+        _player1.StartStream(rtspUrl);
     }
 
-    private void Button2_OnClick(object sender, RoutedEventArgs e)
+    private void BtnStop1_OnClick(object sender, RoutedEventArgs e)
     {
-        StreamPlayerControl.StartPlay(new Uri(TextBox1.Text),
-            TimeSpan.FromSeconds(1.0), TimeSpan.FromSeconds(3.0),
-            RtspTransport.Tcp, RtspFlags.None, int.Parse(TextBox2.Text), int.Parse(TextBox3.Text));
+        if (_player1 == null) return;
+        _player1.StopStream();
+        DpPlayer1.Children.Remove(_player1);
+        _player1 = null;
+    }
+
+    private void BtnStart2_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_player2 != null) return;
+        var rtspUrl = TbUrl2.Text;
+        _player2 = new StreamPlayerControl(_loggerFactory);
+        DpPlayer2.Children.Add(_player2);
+        _player2.StartStream(rtspUrl);
+    }
+
+    private void BtnStop2_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (_player2 == null) return;
+        _player2.StopStream();
+        DpPlayer2.Children.Remove(_player2);
+        _player2 = null;
     }
 }

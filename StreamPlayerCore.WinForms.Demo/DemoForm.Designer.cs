@@ -1,14 +1,16 @@
-﻿namespace StreamPlayerCore.WinForms.Demo;
+using System.ComponentModel;
+
+namespace StreamPlayerCore.WinForms.Demo;
 
 partial class DemoForm
 {
     /// <summary>
-    ///  Required designer variable.
+    /// Required designer variable.
     /// </summary>
-    private System.ComponentModel.IContainer components = null;
+    private IContainer components = null;
 
     /// <summary>
-    ///  Clean up any resources being used.
+    /// Clean up any resources being used.
     /// </summary>
     /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
     protected override void Dispose(bool disposing)
@@ -29,124 +31,112 @@ partial class DemoForm
     /// </summary>
     private void InitializeComponent()
     {
-        streamPlayerControl1 = new StreamPlayerCore.WinForms.Control.StreamPlayerControl();
-        streamPlayerControl2 = new StreamPlayerCore.WinForms.Control.StreamPlayerControl();
-        button1 = new System.Windows.Forms.Button();
-        button2 = new System.Windows.Forms.Button();
-        textBox1 = new System.Windows.Forms.TextBox();
-        textBox2 = new System.Windows.Forms.TextBox();
-        textBox3 = new System.Windows.Forms.TextBox();
-        label1 = new System.Windows.Forms.Label();
-        label2 = new System.Windows.Forms.Label();
+        panel1 = new System.Windows.Forms.Panel();
+        panel2 = new System.Windows.Forms.Panel();
+        tbUrl1 = new System.Windows.Forms.TextBox();
+        tbUrl2 = new System.Windows.Forms.TextBox();
+        btnStart1 = new System.Windows.Forms.Button();
+        btnStop1 = new System.Windows.Forms.Button();
+        btnStop2 = new System.Windows.Forms.Button();
+        btnStart2 = new System.Windows.Forms.Button();
         SuspendLayout();
         // 
-        // streamPlayerControl1
+        // panel1
         // 
-        streamPlayerControl1.Location = new System.Drawing.Point(13, 11);
-        streamPlayerControl1.Name = "streamPlayerControl1";
-        streamPlayerControl1.Size = new System.Drawing.Size(783, 399);
-        streamPlayerControl1.TabIndex = 0;
+        panel1.Location = new System.Drawing.Point(12, 12);
+        panel1.Name = "panel1";
+        panel1.Size = new System.Drawing.Size(640, 480);
+        panel1.TabIndex = 0;
         // 
-        // streamPlayerControl2
+        // panel2
         // 
-        streamPlayerControl2.Location = new System.Drawing.Point(12, 12);
-        streamPlayerControl2.Name = "streamPlayerControl2";
-        streamPlayerControl2.Size = new System.Drawing.Size(760, 472);
-        streamPlayerControl2.TabIndex = 1;
+        panel2.Location = new System.Drawing.Point(662, 12);
+        panel2.Name = "panel2";
+        panel2.Size = new System.Drawing.Size(640, 480);
+        panel2.TabIndex = 1;
         // 
-        // button1
+        // tbUrl1
         // 
-        button1.Location = new System.Drawing.Point(672, 519);
-        button1.Name = "button1";
-        button1.Size = new System.Drawing.Size(100, 30);
-        button1.TabIndex = 2;
-        button1.Text = "Play";
-        button1.UseVisualStyleBackColor = true;
-        button1.Click += button1_Click;
+        tbUrl1.Location = new System.Drawing.Point(12, 498);
+        tbUrl1.Name = "tbUrl1";
+        tbUrl1.Size = new System.Drawing.Size(640, 23);
+        tbUrl1.TabIndex = 2;
         // 
-        // button2
+        // tbUrl2
         // 
-        button2.Location = new System.Drawing.Point(566, 519);
-        button2.Name = "button2";
-        button2.Size = new System.Drawing.Size(100, 30);
-        button2.TabIndex = 4;
-        button2.Text = "Stop";
-        button2.UseVisualStyleBackColor = true;
-        button2.Click += button2_Click;
+        tbUrl2.Location = new System.Drawing.Point(662, 498);
+        tbUrl2.Name = "tbUrl2";
+        tbUrl2.Size = new System.Drawing.Size(640, 23);
+        tbUrl2.TabIndex = 3;
         // 
-        // textBox1
+        // btnStart1
         // 
-        textBox1.Location = new System.Drawing.Point(12, 524);
-        textBox1.Name = "textBox1";
-        textBox1.Size = new System.Drawing.Size(548, 23);
-        textBox1.TabIndex = 3;
+        btnStart1.Location = new System.Drawing.Point(12, 527);
+        btnStart1.Name = "btnStart1";
+        btnStart1.Size = new System.Drawing.Size(112, 30);
+        btnStart1.TabIndex = 4;
+        btnStart1.Text = "Start";
+        btnStart1.UseVisualStyleBackColor = true;
+        btnStart1.Click += btnStart1_Click;
         // 
-        // textBox2
+        // btnStop1
         // 
-        textBox2.Location = new System.Drawing.Point(672, 490);
-        textBox2.Name = "textBox2";
-        textBox2.Size = new System.Drawing.Size(100, 23);
-        textBox2.TabIndex = 5;
-        textBox2.Text = "5000000";
+        btnStop1.Location = new System.Drawing.Point(130, 527);
+        btnStop1.Name = "btnStop1";
+        btnStop1.Size = new System.Drawing.Size(112, 30);
+        btnStop1.TabIndex = 5;
+        btnStop1.Text = "Stop";
+        btnStop1.UseVisualStyleBackColor = true;
+        btnStop1.Click += btnStop1_Click;
         // 
-        // textBox3
+        // btnStop2
         // 
-        textBox3.Location = new System.Drawing.Point(460, 490);
-        textBox3.Name = "textBox3";
-        textBox3.Size = new System.Drawing.Size(100, 23);
-        textBox3.TabIndex = 6;
-        textBox3.Text = "0";
+        btnStop2.Location = new System.Drawing.Point(780, 527);
+        btnStop2.Name = "btnStop2";
+        btnStop2.Size = new System.Drawing.Size(112, 30);
+        btnStop2.TabIndex = 7;
+        btnStop2.Text = "Stop";
+        btnStop2.UseVisualStyleBackColor = true;
+        btnStop2.Click += btnStop2_Click;
         // 
-        // label1
+        // btnStart2
         // 
-        label1.Location = new System.Drawing.Point(566, 490);
-        label1.Name = "label1";
-        label1.Size = new System.Drawing.Size(100, 23);
-        label1.TabIndex = 7;
-        label1.Text = "probe size";
-        label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-        // 
-        // label2
-        // 
-        label2.Location = new System.Drawing.Point(354, 490);
-        label2.Name = "label2";
-        label2.Size = new System.Drawing.Size(100, 23);
-        label2.TabIndex = 8;
-        label2.Text = "analyze duration";
-        label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+        btnStart2.Location = new System.Drawing.Point(662, 527);
+        btnStart2.Name = "btnStart2";
+        btnStart2.Size = new System.Drawing.Size(112, 30);
+        btnStart2.TabIndex = 6;
+        btnStart2.Text = "Start";
+        btnStart2.UseVisualStyleBackColor = true;
+        btnStart2.Click += btnStart2_Click;
         // 
         // DemoForm
         // 
         AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        ClientSize = new System.Drawing.Size(784, 561);
-        Controls.Add(label2);
-        Controls.Add(label1);
-        Controls.Add(textBox3);
-        Controls.Add(textBox2);
-        Controls.Add(button2);
-        Controls.Add(textBox1);
-        Controls.Add(button1);
-        Controls.Add(streamPlayerControl2);
-        Controls.Add(streamPlayerControl1);
-        Text = "Form1";
+        ClientSize = new System.Drawing.Size(1314, 571);
+        Controls.Add(btnStop2);
+        Controls.Add(btnStart2);
+        Controls.Add(btnStop1);
+        Controls.Add(btnStart1);
+        Controls.Add(tbUrl2);
+        Controls.Add(tbUrl1);
+        Controls.Add(panel2);
+        Controls.Add(panel1);
+        Text = "DemoForm";
         ResumeLayout(false);
         PerformLayout();
     }
 
-    private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.TextBox tbUrl1;
+    private System.Windows.Forms.TextBox tbUrl2;
+    private System.Windows.Forms.Button btnStart1;
+    private System.Windows.Forms.Button btnStop1;
+    private System.Windows.Forms.Button btnStop2;
+    private System.Windows.Forms.Button btnStart2;
 
-    private System.Windows.Forms.TextBox textBox2;
-    private System.Windows.Forms.TextBox textBox3;
-    private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.Panel panel2;
 
-    private System.Windows.Forms.Button button2;
-
-    private StreamPlayerCore.WinForms.Control.StreamPlayerControl streamPlayerControl2;
-    private System.Windows.Forms.Button button1;
-    private System.Windows.Forms.TextBox textBox1;
-
-    private StreamPlayerCore.WinForms.Control.StreamPlayerControl streamPlayerControl1;
+    private System.Windows.Forms.Panel panel1;
 
     #endregion
 }
