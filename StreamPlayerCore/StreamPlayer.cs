@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using SkiaSharp;
 
 namespace StreamPlayerCore;
@@ -32,12 +30,12 @@ public sealed class StreamPlayer
     private readonly AVHWDeviceType _hwDecodeDeviceType;
     private readonly unsafe AVDictionary* _optionsPtr;
 
-    private readonly CancellationTokenSource _tokenSource = new();
+    private CancellationTokenSource _tokenSource = new();
     private bool _started;
     
     private readonly Guid _instanceId = Guid.NewGuid();
     
-    private ILoggerFactory _loggerFactory;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<StreamPlayer> _logger;
     private readonly FFmpegLogger _ffmpegLogger;
 
@@ -72,6 +70,7 @@ public sealed class StreamPlayer
     {
         if (_started) return;
         _started = true;
+        _tokenSource = new CancellationTokenSource();
         
         var sourceWithoutCredentials = new UriBuilder(streamSource)
         {
@@ -142,7 +141,10 @@ public sealed class StreamPlayer
                 }
 
                 Task.Delay(5).Wait();
-                OnProcessCompleted(bitmap);
+                OnProcessCompleted(bitmap.Copy());
+                bitmap.Dispose();
+                bitmap = null;
+                GC.Collect();
             }
         }, _tokenSource.Token);
     }

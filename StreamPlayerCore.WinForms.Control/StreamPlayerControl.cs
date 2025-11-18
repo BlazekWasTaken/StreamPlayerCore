@@ -9,6 +9,7 @@ namespace StreamPlayerCore.WinForms.Control;
 public partial class StreamPlayerControl : SKControl
 {
     private readonly StreamPlayer _player;
+    private readonly Lock _currentFrameLock = new();
     private SKBitmap? _currentFrame;
     private FitType _fitType;
 
@@ -19,7 +20,13 @@ public partial class StreamPlayerControl : SKControl
         FFmpegLogLevel ffmpegLogLevel = FFmpegLogLevel.AvLogQuiet)
     {
         InitializeComponent();
-        PaintSurface += (_, e) => SkiaHelper.SkControlOnPaintSurface(e, _currentFrame, _fitType);
+        PaintSurface += (_, e) =>
+        {
+            lock (_currentFrameLock)
+            {
+                SkiaHelper.SkControlOnPaintSurface(e, _currentFrame, _fitType);
+            }
+        };
         _player = new StreamPlayer(loggerFactory,
             transport,
             flags,
@@ -39,16 +46,21 @@ public partial class StreamPlayerControl : SKControl
     public void StopStream()
     {
         _player.Stop();
-        _currentFrame?.Dispose();
-        _currentFrame = null;
+        lock (_currentFrameLock)
+        {
+            _currentFrame?.Dispose();
+            _currentFrame = null;
+        }
         Invalidate();
     }
 
     private void Player_FrameReadyEvent(SKBitmap frame)
     {
-        _currentFrame?.Dispose();
-        _currentFrame = frame;
-
+        lock (_currentFrameLock)
+        {
+            _currentFrame?.Dispose();
+            _currentFrame = frame;
+        }
         Invalidate();
     }
 }

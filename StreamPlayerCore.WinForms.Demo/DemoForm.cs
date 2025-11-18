@@ -6,7 +6,7 @@ namespace StreamPlayerCore.WinForms.Demo;
 public partial class DemoForm : Form
 {
     private StreamPlayerControl? _player1;
-    private StreamPlayerControl _player2;
+    private StreamPlayerControl? _player2;
 
     private readonly ILoggerFactory _loggerFactory;
 
@@ -15,9 +15,8 @@ public partial class DemoForm : Form
         InitializeComponent();
         _loggerFactory = loggerFactory;
         
-        _player2 = new StreamPlayerControl(_loggerFactory);
-        _player2.Dock = DockStyle.Fill;
-        panel2.Controls.Add(_player2);
+        ResizeBegin += (_, _) => SuspendLayout();
+        ResizeEnd += (_, _) => ResumeLayout();
     }
 
     private void btnStart1_Click(object sender, EventArgs e)
@@ -41,12 +40,20 @@ public partial class DemoForm : Form
 
     private void btnStart2_Click(object sender, EventArgs e)
     {
+        if (_player2 != null) return;
         var rtspUrl = tbUrl2.Text;
+        _player2 = new StreamPlayerControl(_loggerFactory);
+        _player2.Dock = DockStyle.Fill;
+        panel2.Controls.Add(_player2);
         _player2.StartStream(rtspUrl);
     }
 
     private void btnStop2_Click(object sender, EventArgs e)
     {
+        if (_player2 == null) return;
         _player2.StopStream();
+        panel1.Controls.Remove(_player2);
+        _player2.Dispose();
+        _player2 = null;
     }
 }
