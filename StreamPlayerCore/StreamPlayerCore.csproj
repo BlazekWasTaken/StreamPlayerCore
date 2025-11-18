@@ -31,6 +31,7 @@
     <ItemGroup Label="FilesToCopy">
         <Content Include="StreamPlayerCore.targets" PackagePath="build/StreamPlayerCore.targets" />
         <Content Include="ffmpeg\**" Pack="true" PackagePath="contentFiles\ffmpeg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <PackageCopyToOutput>true</PackageCopyToOutput>
         </Content>
     </ItemGroup>
