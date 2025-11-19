@@ -83,11 +83,25 @@ public sealed class StreamPlayer
         
         Task.Run(() =>
         {
-            using var vsd = new VideoStreamDecoder(_loggerFactory,
-                streamSource.AbsoluteUri,
-                _hwDecodeDeviceType,
-                _optionsPtr,
-                _instanceId);
+            VideoStreamDecoder? vsd = null;
+            try
+            {
+                vsd = new VideoStreamDecoder(_loggerFactory,
+                    streamSource.AbsoluteUri,
+                    _hwDecodeDeviceType,
+                    _optionsPtr,
+                    _instanceId);
+            }
+            catch (FFmpegInitException)
+            {
+                _logger.LogInformation(
+                    "Stream instance: {id}; Failed to initialize video stream decoder. Stopping the stream.",
+                    _instanceId);
+                vsd?.Dispose();
+                vsd = null;
+                Stop();
+                return;
+            }
 
             if (vsd.FrameSize.Width == 0 || vsd.FrameSize.Height == 0 ||
                 vsd.PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
@@ -121,6 +135,7 @@ public sealed class StreamPlayer
                     destinationPixelFormat,
                     _instanceId);
 
+            _logger.LogInformation("Stream instance: {id}; Starting frame decoding loop.", _instanceId);
             while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
             {
                 var convertedFrame = vfc.Convert(frame);
@@ -146,6 +161,8 @@ public sealed class StreamPlayer
                 bitmap = null;
                 GC.Collect();
             }
+            _logger.LogInformation("Stream instance: {id}; Exiting frame decoding loop.", _instanceId);
+            vsd.Dispose();
         }, _tokenSource.Token);
     }
 
