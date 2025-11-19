@@ -27,10 +27,10 @@ internal static class FFmpegHelper
 
 internal static class FFmpegExtensions
 {
-    public static bool RunWithTimeout(int timeoutMilliseconds, Action action)
+    public static bool RunWithTimeout(TimeSpan timeout, Action action)
     {
         using var cts = new CancellationTokenSource();
-        cts.CancelAfter(timeoutMilliseconds);
+        cts.CancelAfter(timeout);
         var token = cts.Token;
         var task = Task.Run(action, token);
         try

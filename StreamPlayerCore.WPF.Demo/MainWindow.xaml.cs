@@ -12,7 +12,7 @@ public partial class MainWindow
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
 
-    private ILoggerFactory _loggerFactory;
+    private readonly ILoggerFactory _loggerFactory;
     
     public MainWindow(ILoggerFactory loggerFactory)
     {
@@ -24,7 +24,7 @@ public partial class MainWindow
     {
         if (_player1 != null) return;
         var rtspUrl = TbUrl1.Text;
-        _player1 = new StreamPlayerControl(_loggerFactory);
+        _player1 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(3));
         DpPlayer1.Children.Add(_player1);
         _player1.StartStream(rtspUrl);
     }
@@ -41,7 +41,7 @@ public partial class MainWindow
     {
         if (_player2 != null) return;
         var rtspUrl = TbUrl2.Text;
-        _player2 = new StreamPlayerControl(_loggerFactory);
+        _player2 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(3));
         DpPlayer2.Children.Add(_player2);
         _player2.StartStream(rtspUrl);
     }

@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using AVCodec = FFmpeg.AutoGen.AVCodec;
 using AVCodecContext = FFmpeg.AutoGen.AVCodecContext;
 using AVDictionaryEntry = FFmpeg.AutoGen.AVDictionaryEntry;
@@ -31,40 +30,34 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
 
     public VideoStreamDecoder(ILoggerFactory loggerFactory,
         string url, AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-        AVDictionary* options = null, Guid instanceId = default)
+        AVDictionary* options = null, Guid instanceId = default, TimeSpan? timeout = null)
     {
         _logger = loggerFactory.CreateLogger<VideoStreamDecoder>();
         _instanceId = instanceId;
         
         _logger.LogInformation("Stream instance: {id}; Creating VideoStreamDecoder.", _instanceId);
 
-        var success = FFmpegExtensions.RunWithTimeout(5000, () =>
+        var success = FFmpegExtensions.RunWithTimeout(timeout ?? TimeSpan.MaxValue, () =>
         {
             var tempOptions = options; 
             
             _pFormatContext = ffmpeg.avformat_alloc_context();
             _receivedFrame = ffmpeg.av_frame_alloc();
             var pFormatContext = _pFormatContext;
-            _logger.LogInformation("Stream instance: {id}; Opening input URL: {url}", _instanceId, url);
             ffmpeg.avformat_open_input(&pFormatContext, url, null, &tempOptions).ThrowExceptionIfError();
-            _logger.LogInformation("Stream instance: {id}; Finding stream info.", _instanceId);
             ffmpeg.avformat_find_stream_info(_pFormatContext, null).ThrowExceptionIfError();
-            _logger.LogInformation("Stream instance: {id}; Finding best video stream.", _instanceId);
             AVCodec* codec = null;
             _streamIndex = ffmpeg
                 .av_find_best_stream(_pFormatContext, AVMediaType.AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0)
                 .ThrowExceptionIfError();
-            _logger.LogInformation("Stream instance: {id}; Initializing codec context.", _instanceId);
             _pCodecContext = ffmpeg.avcodec_alloc_context3(codec);
 
             if (hwDeviceType != AVHWDeviceType.AV_HWDEVICE_TYPE_NONE)
                 ffmpeg.av_hwdevice_ctx_create(&_pCodecContext->hw_device_ctx, hwDeviceType, null, null, 0)
                     .ThrowExceptionIfError();
-
-            _logger.LogInformation("Stream instance: {id}; Creating AVCodecContext.", _instanceId);
+            
             ffmpeg.avcodec_parameters_to_context(_pCodecContext, _pFormatContext->streams[_streamIndex]->codecpar)
                 .ThrowExceptionIfError();
-            _logger.LogInformation("Stream instance: {id}; Initializing AVPacketContext.", _instanceId);
             ffmpeg.avcodec_open2(_pCodecContext, codec, null).ThrowExceptionIfError();
 
             CodecName = ffmpeg.avcodec_get_name(codec->id);

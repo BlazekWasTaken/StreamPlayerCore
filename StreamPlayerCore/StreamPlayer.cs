@@ -22,7 +22,19 @@ public enum RtspFlags
     PreferTcp = 3
 }
 
+public enum StreamStopReason
+{
+    UserRequested = 0,
+    InitializationFailed = 1,
+    StreamEnded = 2
+}
+
 public delegate void FrameReady(SKBitmap frame);
+
+public delegate void StreamStarted();
+
+public delegate void StreamStopped(StreamStopReason reason);
+
 
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed class StreamPlayer
@@ -58,15 +70,15 @@ public sealed class StreamPlayer
         {
             _optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
         }
-
         _hwDecodeDeviceType = hwDecodeDeviceType;
-
         _ffmpegLogger = new FFmpegLogger(loggerFactory, ffmpegLogLevel, _instanceId);
     }
 
     public event FrameReady? FrameReadyEvent;
+    public event StreamStarted? StreamStartedEvent;
+    public event StreamStopped? StreamStoppedEvent;
 
-    public unsafe void Start(Uri streamSource)
+    public unsafe void Start(Uri streamSource, TimeSpan timeout)
     {
         if (_started) return;
         _started = true;
@@ -90,28 +102,31 @@ public sealed class StreamPlayer
                     streamSource.AbsoluteUri,
                     _hwDecodeDeviceType,
                     _optionsPtr,
-                    _instanceId);
+                    _instanceId,
+                    timeout);
             }
             catch (FFmpegInitException)
             {
                 _logger.LogInformation(
-                    "Stream instance: {id}; Failed to initialize video stream decoder. Stopping the stream.",
+                    "Stream instance: {id}; Failed to initialize video stream decoder.",
                     _instanceId);
                 vsd?.Dispose();
                 vsd = null;
-                Stop();
+                Stop(StreamStopReason.InitializationFailed);
                 return;
             }
 
             if (vsd.FrameSize.Width == 0 || vsd.FrameSize.Height == 0 ||
                 vsd.PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
             {
-                _logger.LogError("Stream instance: {id}; Invalid video stream parameters. Stopping the stream.",
+                _logger.LogError("Stream instance: {id}; Invalid video stream parameters.",
                     _instanceId);
-                Stop();
+                vsd?.Dispose();
+                vsd = null;
+                Stop(StreamStopReason.InitializationFailed);
                 return;
             }
-            
+
             _logger.LogInformation("Stream instance: {id}; Video stream opened; Codec: {codecName}; " +
                                    "Source size: {width}x{height}; Source pixel format: {pixelFormat}",
                 _instanceId,
@@ -134,10 +149,16 @@ public sealed class StreamPlayer
                     destinationSize,
                     destinationPixelFormat,
                     _instanceId);
-
-            _logger.LogInformation("Stream instance: {id}; Starting frame decoding loop.", _instanceId);
+            
+            var started = false;
             while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
             {
+                if (!started)
+                {
+                    OnStreamStarted();
+                    started = true;
+                }
+
                 var convertedFrame = vfc.Convert(frame);
                 var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888,
                     SKAlphaType.Opaque);
@@ -150,30 +171,32 @@ public sealed class StreamPlayer
                     bitmap.Info.ColorType == SKColorType.Unknown || bitmap.Info.AlphaType == SKAlphaType.Unknown ||
                     !bitmap.ReadyToDraw)
                 {
-                    _logger.LogError("Stream instance: {id}; Invalid bitmap created from frame. Skipping frame.", _instanceId);
+                    _logger.LogError("Stream instance: {id}; Invalid bitmap created from frame. Skipping frame.",
+                        _instanceId);
                     bitmap.Dispose();
                     continue;
                 }
 
                 Task.Delay(5).Wait();
-                OnProcessCompleted(bitmap.Copy());
+                OnFrameReady(bitmap.Copy());
                 bitmap.Dispose();
                 bitmap = null;
                 GC.Collect();
             }
-            _logger.LogInformation("Stream instance: {id}; Exiting frame decoding loop.", _instanceId);
             vsd.Dispose();
+            vsd = null;
+            Stop(StreamStopReason.StreamEnded);
         }, _tokenSource.Token);
     }
 
-    public void Stop()
+    public void Stop(StreamStopReason reason = StreamStopReason.UserRequested)
     {
         if (!_started) return;
         
-        _logger.LogInformation("Stream instance: {id}; Stopping stream.",
-            _instanceId);
+        _logger.LogInformation("Stream instance: {id}; Stopping stream.", _instanceId);
         
         _tokenSource.Cancel();
+        OnStreamStopped(reason);
         _started = false;
     }
 
@@ -241,8 +264,20 @@ public sealed class StreamPlayer
         };
     }
 
-    private void OnProcessCompleted(SKBitmap frame)
+    private void OnFrameReady(SKBitmap frame)
     {
         FrameReadyEvent?.Invoke(frame);
+    }
+    
+    private void OnStreamStarted()
+    { 
+        _logger.LogInformation("Stream instance: {id}; Stream started.", _instanceId);
+        StreamStartedEvent?.Invoke();
+    }
+    
+    private void OnStreamStopped(StreamStopReason reason)
+    {
+        _logger.LogInformation("Stream instance: {id}; Stream stopped; Reason: {reason}", _instanceId, reason);
+        StreamStoppedEvent?.Invoke(reason);
     }
 }

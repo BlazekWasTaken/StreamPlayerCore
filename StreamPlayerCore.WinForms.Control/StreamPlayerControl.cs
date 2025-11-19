@@ -6,20 +6,29 @@ using StreamPlayerCore.Helper;
 
 namespace StreamPlayerCore.WinForms.Control;
 
+public delegate void StreamStarted();
+
+public delegate void StreamStopped(StreamStopReason reason);
+
 public partial class StreamPlayerControl : SKControl
 {
     private readonly StreamPlayer _player;
     private readonly Lock _currentFrameLock = new();
     private SKBitmap? _currentFrame;
     private FitType _fitType;
+    private readonly TimeSpan _timeout;
+    
+    public event StreamStarted? StreamStartedEvent;
+    public event StreamStopped? StreamStoppedEvent;
 
-    public StreamPlayerControl(ILoggerFactory loggerFactory, 
+    public StreamPlayerControl(ILoggerFactory loggerFactory, TimeSpan timeout,
         RtspTransport transport = RtspTransport.Tcp, RtspFlags flags = RtspFlags.None,
         int analyzeDuration = 0, int probeSize = 65536,
         AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
         FFmpegLogLevel ffmpegLogLevel = FFmpegLogLevel.AvLogQuiet)
     {
         InitializeComponent();
+        _timeout = timeout;
         PaintSurface += (_, e) =>
         {
             lock (_currentFrameLock)
@@ -35,12 +44,14 @@ public partial class StreamPlayerControl : SKControl
             hwDeviceType,
             (int)ffmpegLogLevel);
         _player.FrameReadyEvent += Player_FrameReadyEvent;
+        _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
+        _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
     }
 
     public void StartStream(string url, FitType fitType = FitType.Stretch)
     {
         _fitType = fitType;
-        _player.Start(new Uri(url));
+        _player.Start(new Uri(url), _timeout);
     }
 
     public void StopStream()

@@ -12,14 +12,16 @@ public partial class StreamPlayerControl
     private readonly Lock _currentFrameLock = new();
     private SKBitmap? _currentFrame;
     private FitType _fitType;
+    private readonly TimeSpan _timeout;
 
-    public StreamPlayerControl(ILoggerFactory loggerFactory, 
+    public StreamPlayerControl(ILoggerFactory loggerFactory, TimeSpan timeout,
         RtspTransport transport = RtspTransport.Tcp, RtspFlags flags = RtspFlags.None,
         int analyzeDuration = 0, int probeSize = 65536,
         AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
         FFmpegLogLevel ffmpegLogLevel = FFmpegLogLevel.AvLogDebug)
     {
         InitializeComponent();
+        _timeout = timeout;
         _player = new StreamPlayer(loggerFactory,
             transport,
             flags,
@@ -33,7 +35,7 @@ public partial class StreamPlayerControl
     public void StartStream(string url, FitType fitType = FitType.Stretch)
     {
         _fitType = fitType;
-        _player.Start(new Uri(url));
+        _player.Start(new Uri(url), _timeout);
     }
 
     public void StopStream()
