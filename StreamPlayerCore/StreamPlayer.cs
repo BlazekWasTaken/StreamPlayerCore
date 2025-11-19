@@ -191,25 +191,19 @@ public sealed class StreamPlayer
             vsd = null;
             if (!_tokenSource.IsCancellationRequested)
             {
-                StopStream();
+                Stop(StreamStopReason.StreamEnded);
             }
         }, _tokenSource.Token);
     }
 
     public void Stop(StreamStopReason reason = StreamStopReason.UserRequested)
     {
-        _stopReason = reason;
-        StopStream();
-    }
-
-    private void StopStream()
-    {
         if (!_started) return;
 
         _logger.LogInformation("Stream instance: {id}; Stopping stream.", _instanceId);
         
         _tokenSource.Cancel();
-        OnStreamStopped(_stopReason);
+        OnStreamStopped(reason);
         _started = false;
     }
 
