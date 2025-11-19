@@ -18,8 +18,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="OpenTK" Version="4.9.4" />
-        <PackageReference Include="OpenTK.GLWpfControl" Version="4.3.3" />
+        <PackageReference Include="OpenTK" Version="4.9.4"/>
+        <PackageReference Include="OpenTK.GLWpfControl" Version="4.3.3"/>
         <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1"/>
     </ItemGroup>
 
@@ -32,5 +32,5 @@
         <None Include="..\LICENSE" Pack="true" PackagePath=""/>
         <None Include="README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
-    
+
 </Project>

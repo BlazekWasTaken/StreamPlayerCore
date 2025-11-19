@@ -16,9 +16,11 @@ Install-Package StreamPlayerCore.WPF.Control
 
 ## Usage
 
-For a complete example of using the StreamPlayerCore WPF control, please refer to the [StreamPlayerCore.WPF.Demo](../StreamPlayerCore.WPF.Demo) project.
+For a complete example of using the StreamPlayerCore WPF control, please refer to
+the [StreamPlayerCore.WPF.Demo](../StreamPlayerCore.WPF.Demo) project.
 
-To use the StreamPlayerCore WPF control, it is recommended to add a DockPanel to your window and place the StreamPlayerCore control inside it programatically.
+To use the StreamPlayerCore WPF control, it is recommended to add a DockPanel to your window and place the
+StreamPlayerCore control inside it programatically.
 
 ```xml
 <Window x:Class="StreamPlayerCore.WPF.Demo.MainWindow"

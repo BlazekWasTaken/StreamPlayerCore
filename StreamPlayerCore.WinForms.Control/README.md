@@ -16,9 +16,11 @@ Install-Package StreamPlayerCore.WinForms.Control
 
 ## Usage
 
-For a complete example of using the StreamPlayerCore WinForms control, please refer to the [StreamPlayerCore.WinForms.Demo](../StreamPlayerCore.WinForms.Demo) project.
+For a complete example of using the StreamPlayerCore WinForms control, please refer to
+the [StreamPlayerCore.WinForms.Demo](../StreamPlayerCore.WinForms.Demo) project.
 
-To use the StreamPlayerCore WinForms control, it is recommended to add a Panel to your window and place the StreamPlayerCore control inside it programatically.
+To use the StreamPlayerCore WinForms control, it is recommended to add a Panel to your window and place the
+StreamPlayerCore control inside it programatically.
 
 ```csharp
 using StreamPlayerCore.WinForms.Control;

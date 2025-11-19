@@ -1,8 +1,8 @@
 ﻿<Project>
     <ItemGroup>
-        <FFmpegBinaries Include="$(MSBuildThisFileDirectory)\..\contentFiles\ffmpeg\**" />
+        <FFmpegBinaries Include="$(MSBuildThisFileDirectory)\..\contentFiles\ffmpeg\**"/>
     </ItemGroup>
     <Target Name="CopyFFmpegBinaries" BeforeTargets="Build">
-        <Copy SourceFiles="@(FFmpegBinaries)" DestinationFolder="$(TargetDir)\ffmpeg\" />
+        <Copy SourceFiles="@(FFmpegBinaries)" DestinationFolder="$(TargetDir)\ffmpeg\"/>
     </Target>
 </Project>

@@ -16,7 +16,8 @@ Install-Package StreamPlayerCore.Helper
 
 ## Usage
 
-For usage examples, please refer to the [StreamPlayerCore.WinForms.Control](../StreamPlayerCore.WinForms.Control) and [StreamPlayerCore.WPF.Control](../StreamPlayerCore.WPF.Control) projects.
+For usage examples, please refer to the [StreamPlayerCore.WinForms.Control](../StreamPlayerCore.WinForms.Control)
+and [StreamPlayerCore.WPF.Control](../StreamPlayerCore.WPF.Control) projects.
 
 ## License
 

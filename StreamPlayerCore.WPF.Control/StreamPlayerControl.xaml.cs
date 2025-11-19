@@ -8,11 +8,11 @@ namespace StreamPlayerCore.WPF.Control;
 
 public partial class StreamPlayerControl
 {
-    private readonly StreamPlayer _player;
     private readonly Lock _currentFrameLock = new();
+    private readonly StreamPlayer _player;
+    private readonly TimeSpan _timeout;
     private SKBitmap? _currentFrame;
     private FitType _fitType;
-    private readonly TimeSpan _timeout;
 
     public StreamPlayerControl(ILoggerFactory loggerFactory, TimeSpan timeout,
         RtspTransport transport = RtspTransport.Tcp, RtspFlags flags = RtspFlags.None,
@@ -46,6 +46,7 @@ public partial class StreamPlayerControl
             _currentFrame?.Dispose();
             _currentFrame = null;
         }
+
         Dispatcher.Invoke(SkiaControl.InvalidateVisual);
     }
 
@@ -56,6 +57,7 @@ public partial class StreamPlayerControl
             _currentFrame?.Dispose();
             _currentFrame = frame;
         }
+
         Dispatcher.Invoke(SkiaControl.InvalidateVisual);
     }
 

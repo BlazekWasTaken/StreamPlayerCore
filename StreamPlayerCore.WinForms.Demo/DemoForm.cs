@@ -5,16 +5,15 @@ namespace StreamPlayerCore.WinForms.Demo;
 
 public partial class DemoForm : Form
 {
+    private readonly ILoggerFactory _loggerFactory;
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
-
-    private readonly ILoggerFactory _loggerFactory;
 
     public DemoForm(ILoggerFactory loggerFactory)
     {
         InitializeComponent();
         _loggerFactory = loggerFactory;
-        
+
         ResizeBegin += (_, _) => SuspendLayout();
         ResizeEnd += (_, _) => ResumeLayout();
     }

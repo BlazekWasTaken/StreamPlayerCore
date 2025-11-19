@@ -19,7 +19,7 @@
 
     <ItemGroup>
         <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0"/>
         <PackageReference Include="SkiaSharp" Version="3.119.1"/>
     </ItemGroup>
 
@@ -29,11 +29,11 @@
     </ItemGroup>
 
     <ItemGroup Label="FilesToCopy">
-        <Content Include="StreamPlayerCore.targets" PackagePath="build/StreamPlayerCore.targets" />
+        <Content Include="StreamPlayerCore.targets" PackagePath="build/StreamPlayerCore.targets"/>
         <Content Include="ffmpeg\**" Pack="true" PackagePath="contentFiles\ffmpeg">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <PackageCopyToOutput>true</PackageCopyToOutput>
         </Content>
     </ItemGroup>
-    
+
 </Project>

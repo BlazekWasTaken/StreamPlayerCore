@@ -35,21 +35,20 @@ public delegate void StreamStarted();
 
 public delegate void StreamStopped(StreamStopReason reason);
 
-
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed class StreamPlayer
 {
+    private readonly FFmpegLogger _ffmpegLogger;
     private readonly AVHWDeviceType _hwDecodeDeviceType;
+
+    private readonly Guid _instanceId = Guid.NewGuid();
+    private readonly ILogger<StreamPlayer> _logger;
+
+    private readonly ILoggerFactory _loggerFactory;
     private readonly unsafe AVDictionary* _optionsPtr;
+    private bool _started;
 
     private CancellationTokenSource _tokenSource = new();
-    private bool _started;
-    
-    private readonly Guid _instanceId = Guid.NewGuid();
-    
-    private readonly ILoggerFactory _loggerFactory;
-    private readonly ILogger<StreamPlayer> _logger;
-    private readonly FFmpegLogger _ffmpegLogger;
 
     public StreamPlayer(ILoggerFactory loggerFactory,
         RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
@@ -59,10 +58,11 @@ public sealed class StreamPlayer
     {
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<StreamPlayer>();
-        
+
         ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg");
         DynamicallyLoadedBindings.Initialize();
-        _logger.LogInformation("Stream instance: {id}; FFmpeg libraries loaded from: {ffmpegRootPath}; Version info: {ffmpegVersionInfo}",
+        _logger.LogInformation(
+            "Stream instance: {id}; FFmpeg libraries loaded from: {ffmpegRootPath}; Version info: {ffmpegVersionInfo}",
             _instanceId,
             ffmpeg.RootPath,
             ffmpeg.av_version_info());
@@ -70,6 +70,7 @@ public sealed class StreamPlayer
         {
             _optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
         }
+
         _hwDecodeDeviceType = hwDecodeDeviceType;
         _ffmpegLogger = new FFmpegLogger(loggerFactory, ffmpegLogLevel, _instanceId);
     }
@@ -83,7 +84,7 @@ public sealed class StreamPlayer
         if (_started) return;
         _started = true;
         _tokenSource = new CancellationTokenSource();
-        
+
         var sourceWithoutCredentials = new UriBuilder(streamSource)
         {
             UserName = string.Empty,
@@ -92,7 +93,7 @@ public sealed class StreamPlayer
         _logger.LogInformation("Stream instance: {id}; Starting stream from source: {source}",
             _instanceId,
             sourceWithoutCredentials.ToString());
-        
+
         Task.Run(() =>
         {
             VideoStreamDecoder? vsd = null;
@@ -149,7 +150,7 @@ public sealed class StreamPlayer
                     destinationSize,
                     destinationPixelFormat,
                     _instanceId);
-            
+
             var started = false;
             while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
             {
@@ -183,6 +184,7 @@ public sealed class StreamPlayer
                 bitmap = null;
                 GC.Collect();
             }
+
             vsd.Dispose();
             vsd = null;
             Stop(StreamStopReason.StreamEnded);
@@ -192,9 +194,9 @@ public sealed class StreamPlayer
     public void Stop(StreamStopReason reason = StreamStopReason.UserRequested)
     {
         if (!_started) return;
-        
+
         _logger.LogInformation("Stream instance: {id}; Stopping stream.", _instanceId);
-        
+
         _tokenSource.Cancel();
         OnStreamStopped(reason);
         _started = false;
@@ -268,13 +270,13 @@ public sealed class StreamPlayer
     {
         FrameReadyEvent?.Invoke(frame);
     }
-    
+
     private void OnStreamStarted()
-    { 
+    {
         _logger.LogInformation("Stream instance: {id}; Stream started.", _instanceId);
         StreamStartedEvent?.Invoke();
     }
-    
+
     private void OnStreamStopped(StreamStopReason reason)
     {
         _logger.LogInformation("Stream instance: {id}; Stream stopped; Reason: {reason}", _instanceId, reason);

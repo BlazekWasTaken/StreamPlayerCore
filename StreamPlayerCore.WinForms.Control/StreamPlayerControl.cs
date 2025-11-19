@@ -12,14 +12,11 @@ public delegate void StreamStopped(StreamStopReason reason);
 
 public partial class StreamPlayerControl : SKControl
 {
-    private readonly StreamPlayer _player;
     private readonly Lock _currentFrameLock = new();
+    private readonly StreamPlayer _player;
+    private readonly TimeSpan _timeout;
     private SKBitmap? _currentFrame;
     private FitType _fitType;
-    private readonly TimeSpan _timeout;
-    
-    public event StreamStarted? StreamStartedEvent;
-    public event StreamStopped? StreamStoppedEvent;
 
     public StreamPlayerControl(ILoggerFactory loggerFactory, TimeSpan timeout,
         RtspTransport transport = RtspTransport.Tcp, RtspFlags flags = RtspFlags.None,
@@ -48,6 +45,9 @@ public partial class StreamPlayerControl : SKControl
         _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
     }
 
+    public event StreamStarted? StreamStartedEvent;
+    public event StreamStopped? StreamStoppedEvent;
+
     public void StartStream(string url, FitType fitType = FitType.Stretch)
     {
         _fitType = fitType;
@@ -62,6 +62,7 @@ public partial class StreamPlayerControl : SKControl
             _currentFrame?.Dispose();
             _currentFrame = null;
         }
+
         Invalidate();
     }
 
@@ -72,6 +73,7 @@ public partial class StreamPlayerControl : SKControl
             _currentFrame?.Dispose();
             _currentFrame = frame;
         }
+
         Invalidate();
     }
 }

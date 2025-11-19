@@ -18,15 +18,15 @@ namespace StreamPlayerCore;
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed unsafe class VideoStreamDecoder : IDisposable
 {
+    private readonly Guid _instanceId;
+
+    private readonly ILogger<VideoStreamDecoder> _logger;
     private AVCodecContext* _pCodecContext;
     private AVFormatContext* _pFormatContext;
     private AVFrame* _pFrame;
     private AVPacket* _pPacket;
     private AVFrame* _receivedFrame;
     private int _streamIndex;
-    
-    private readonly ILogger<VideoStreamDecoder> _logger;
-    private readonly Guid _instanceId;
 
     public VideoStreamDecoder(ILoggerFactory loggerFactory,
         string url, AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
@@ -34,13 +34,13 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
     {
         _logger = loggerFactory.CreateLogger<VideoStreamDecoder>();
         _instanceId = instanceId;
-        
+
         _logger.LogInformation("Stream instance: {id}; Creating VideoStreamDecoder.", _instanceId);
 
         var success = FFmpegExtensions.RunWithTimeout(timeout ?? TimeSpan.MaxValue, () =>
         {
-            var tempOptions = options; 
-            
+            var tempOptions = options;
+
             _pFormatContext = ffmpeg.avformat_alloc_context();
             _receivedFrame = ffmpeg.av_frame_alloc();
             var pFormatContext = _pFormatContext;
@@ -55,7 +55,7 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
             if (hwDeviceType != AVHWDeviceType.AV_HWDEVICE_TYPE_NONE)
                 ffmpeg.av_hwdevice_ctx_create(&_pCodecContext->hw_device_ctx, hwDeviceType, null, null, 0)
                     .ThrowExceptionIfError();
-            
+
             ffmpeg.avcodec_parameters_to_context(_pCodecContext, _pFormatContext->streams[_streamIndex]->codecpar)
                 .ThrowExceptionIfError();
             ffmpeg.avcodec_open2(_pCodecContext, codec, null).ThrowExceptionIfError();
@@ -63,7 +63,7 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
             CodecName = ffmpeg.avcodec_get_name(codec->id);
             FrameSize = new Size(_pCodecContext->width, _pCodecContext->height);
             PixelFormat = _pCodecContext->pix_fmt;
-        
+
             _pPacket = ffmpeg.av_packet_alloc();
             _pFrame = ffmpeg.av_frame_alloc();
         });

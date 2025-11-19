@@ -42,6 +42,7 @@ internal static class FFmpegExtensions
             if (token.IsCancellationRequested)
                 return false;
         }
+
         return true;
     }
 }

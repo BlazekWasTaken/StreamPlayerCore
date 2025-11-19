@@ -9,11 +9,10 @@ namespace StreamPlayerCore.WPF.Demo;
 /// </summary>
 public partial class MainWindow
 {
+    private readonly ILoggerFactory _loggerFactory;
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
 
-    private readonly ILoggerFactory _loggerFactory;
-    
     public MainWindow(ILoggerFactory loggerFactory)
     {
         InitializeComponent();
