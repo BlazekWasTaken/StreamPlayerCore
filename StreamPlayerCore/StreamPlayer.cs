@@ -47,8 +47,6 @@ public sealed class StreamPlayer
     private readonly ILoggerFactory _loggerFactory;
     private readonly unsafe AVDictionary* _optionsPtr;
     private bool _started;
-    
-    private StreamStopReason _stopReason = StreamStopReason.StreamEnded;
 
     private CancellationTokenSource _tokenSource = new();
 
@@ -189,10 +187,7 @@ public sealed class StreamPlayer
 
             vsd.Dispose();
             vsd = null;
-            if (!_tokenSource.IsCancellationRequested)
-            {
-                Stop(StreamStopReason.StreamEnded);
-            }
+            if (!_tokenSource.IsCancellationRequested) Stop(StreamStopReason.StreamEnded);
         }, _tokenSource.Token);
     }
 
@@ -201,7 +196,7 @@ public sealed class StreamPlayer
         if (!_started) return;
 
         _logger.LogInformation("Stream instance: {id}; Stopping stream.", _instanceId);
-        
+
         _tokenSource.Cancel();
         OnStreamStopped(reason);
         _started = false;
