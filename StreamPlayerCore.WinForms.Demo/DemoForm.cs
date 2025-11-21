@@ -22,11 +22,12 @@ public partial class DemoForm : Form
     {
         if (_player1 != null) return;
         var rtspUrl = tbUrl1.Text;
-        _player1 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(3));
+        _player1 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(5));
         _player1.StreamStartedEvent += () => { };
         _player1.StreamStoppedEvent += reason =>
         {
             MessageBox.Show($"stream stopped, {reason}");
+            panel1.Controls.Remove(_player1);
             _player1.Dispose();
             _player1 = null;
         };
@@ -37,16 +38,14 @@ public partial class DemoForm : Form
 
     private void btnStop1_Click(object sender, EventArgs e)
     {
-        if (_player1 == null) return;
-        _player1.StopStream();
-        panel1.Controls.Remove(_player1);
+        _player1?.StopStream();
     }
 
     private void btnStart2_Click(object sender, EventArgs e)
     {
         if (_player2 != null) return;
         var rtspUrl = tbUrl2.Text;
-        _player2 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(3));
+        _player2 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(5));
         _player2.Dock = DockStyle.Fill;
         panel2.Controls.Add(_player2);
         _player2.StartStream(rtspUrl);

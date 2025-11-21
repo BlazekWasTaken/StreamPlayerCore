@@ -37,7 +37,7 @@ internal static class FFmpegExtensions
         {
             task.Wait(token);
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException)
         {
             if (token.IsCancellationRequested)
                 return false;

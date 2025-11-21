@@ -45,7 +45,12 @@ public sealed class StreamPlayer
     private readonly ILogger<StreamPlayer> _logger;
 
     private readonly ILoggerFactory _loggerFactory;
-    private readonly unsafe AVDictionary* _optionsPtr;
+    
+    private readonly RtspTransport _rtspTransport;
+    private readonly RtspFlags _rtspFlags;
+    private readonly int _analyzeDuration;
+    private readonly int _probeSize;
+    
     private bool _started;
 
     private CancellationTokenSource _tokenSource = new();
@@ -66,10 +71,11 @@ public sealed class StreamPlayer
             _instanceId,
             ffmpeg.RootPath,
             ffmpeg.av_version_info());
-        unsafe
-        {
-            _optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
-        }
+        
+        _rtspTransport = transport;
+        _rtspFlags = flags;
+        _analyzeDuration = analyzeDuration;
+        _probeSize = probeSize;
 
         _hwDecodeDeviceType = hwDecodeDeviceType;
         _ffmpegLogger = new FFmpegLogger(loggerFactory, ffmpegLogLevel, _instanceId);
@@ -97,12 +103,13 @@ public sealed class StreamPlayer
         Task.Run(() =>
         {
             VideoStreamDecoder? vsd = null;
+            var optionsPtr = GetAvDict(_rtspTransport, _rtspFlags, _analyzeDuration, _probeSize);
             try
             {
                 vsd = new VideoStreamDecoder(_loggerFactory,
                     streamSource.AbsoluteUri,
                     _hwDecodeDeviceType,
-                    _optionsPtr,
+                    optionsPtr,
                     _instanceId,
                     timeout);
             }
@@ -152,37 +159,46 @@ public sealed class StreamPlayer
                     _instanceId);
 
             var started = false;
-            while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
+            try
             {
-                if (!started)
+                while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
                 {
-                    OnStreamStarted();
-                    started = true;
-                }
+                    if (!started)
+                    {
+                        OnStreamStarted();
+                        started = true;
+                    }
 
-                var convertedFrame = vfc.Convert(frame);
-                var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888,
-                    SKAlphaType.Opaque);
-                var bitmap = new SKBitmap();
+                    var convertedFrame = vfc.Convert(frame);
+                    var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888,
+                        SKAlphaType.Opaque);
+                    var bitmap = new SKBitmap();
 
-                bitmap.InstallPixels(imageInfo, (IntPtr)convertedFrame.data[0]);
-                if (bitmap.IsEmpty || bitmap.IsNull ||
-                    bitmap.Width == 0 || bitmap.Height == 0 ||
-                    bitmap.BytesPerPixel == 0 || bitmap.RowBytes == 0 ||
-                    bitmap.Info.ColorType == SKColorType.Unknown || bitmap.Info.AlphaType == SKAlphaType.Unknown ||
-                    !bitmap.ReadyToDraw)
-                {
-                    _logger.LogError("Stream instance: {id}; Invalid bitmap created from frame. Skipping frame.",
-                        _instanceId);
+                    bitmap.InstallPixels(imageInfo, (IntPtr)convertedFrame.data[0]);
+                    if (bitmap.IsEmpty || bitmap.IsNull ||
+                        bitmap.Width == 0 || bitmap.Height == 0 ||
+                        bitmap.BytesPerPixel == 0 || bitmap.RowBytes == 0 ||
+                        bitmap.Info.ColorType == SKColorType.Unknown || bitmap.Info.AlphaType == SKAlphaType.Unknown ||
+                        !bitmap.ReadyToDraw)
+                    {
+                        _logger.LogError("Stream instance: {id}; Invalid bitmap created from frame. Skipping frame.",
+                            _instanceId);
+                        bitmap.Dispose();
+                        continue;
+                    }
+
+                    // Task.Delay(5).Wait();
+                    OnFrameReady(bitmap.Copy());
                     bitmap.Dispose();
-                    continue;
+                    bitmap = null;
+                    GC.Collect();
                 }
-
-                Task.Delay(5).Wait();
-                OnFrameReady(bitmap.Copy());
-                bitmap.Dispose();
-                bitmap = null;
-                GC.Collect();
+            }
+            catch (FFmpegException e)
+            {
+                _logger.LogError("Stream instance: {id}; FFmpeg exception occurred: {message}",
+                    _instanceId,
+                    e.Message);
             }
 
             vsd.Dispose();
