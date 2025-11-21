@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageId>StreamPlayerCore</PackageId>
-        <Version>2.1.0</Version>
+        <Version>2.1.1</Version>
         <Title>StreamPlayerCore</Title>
         <Authors>Błażej Dymek</Authors>
         <Description>C# library for video streaming based on FFmpeg.AutoGen and SkiaSharp</Description>
@@ -15,6 +15,11 @@
         <PackageTags>Stream, RTSP, FFmpeg, Skia</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EmbedAllSources>true</EmbedAllSources>
+        <DebugType>Embedded</DebugType>
     </PropertyGroup>
 
     <ItemGroup>

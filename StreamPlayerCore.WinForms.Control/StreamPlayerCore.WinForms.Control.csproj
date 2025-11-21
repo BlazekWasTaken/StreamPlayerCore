@@ -3,10 +3,10 @@
     <PropertyGroup>
         <TargetFramework>net10.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
-        <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UseWindowsForms>true</UseWindowsForms>
         <PackageId>StreamPlayerCore.WinForms.Control</PackageId>
-        <Version>2.1.0</Version>
+        <Version>2.1.1</Version>
         <Title>StreamPlayerCore.WinForms.Control</Title>
         <Authors>Błażej Dymek</Authors>
         <Description>WinForms control for video streaming based on FFmpeg.AutoGen and SkiaSharp</Description>
@@ -15,6 +15,11 @@
         <PackageTags>Stream, RTSP, WinForms, FFmpeg, Skia</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EmbedAllSources>true</EmbedAllSources>
+        <DebugType>Embedded</DebugType>
     </PropertyGroup>
 
     <ItemGroup>
