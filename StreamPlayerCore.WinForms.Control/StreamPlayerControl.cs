@@ -1,7 +1,5 @@
 ﻿using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
-using SkiaSharp;
-using SkiaSharp.Views.Desktop;
 using StreamPlayerCore.Helper;
 
 namespace StreamPlayerCore.WinForms.Control;
@@ -10,13 +8,12 @@ public delegate void StreamStarted();
 
 public delegate void StreamStopped(StreamStopReason reason);
 
-public partial class StreamPlayerControl : SKControl
+public sealed partial class StreamPlayerControl : System.Windows.Forms.Control
 {
     private readonly Lock _currentFrameLock = new();
     private readonly StreamPlayer _player;
     private readonly TimeSpan _timeout;
-    private SKBitmap? _currentFrame;
-    private FitType _fitType;
+    private Bitmap? _currentFrame;
 
     public StreamPlayerControl(ILoggerFactory loggerFactory, TimeSpan timeout,
         RtspTransport transport = RtspTransport.Tcp, RtspFlags flags = RtspFlags.None,
@@ -25,12 +22,14 @@ public partial class StreamPlayerControl : SKControl
         FFmpegLogLevel ffmpegLogLevel = FFmpegLogLevel.AvLogQuiet)
     {
         InitializeComponent();
+        DoubleBuffered = true;
         _timeout = timeout;
-        PaintSurface += (_, e) =>
+        Paint += (_, e) =>
         {
             lock (_currentFrameLock)
             {
-                SkiaHelper.SkControlOnPaintSurface(e, _currentFrame, _fitType);
+                if (_currentFrame == null) return;
+                e.Graphics.DrawImage(_currentFrame, 0, 0);
             }
         };
         _player = new StreamPlayer(loggerFactory,
@@ -48,9 +47,8 @@ public partial class StreamPlayerControl : SKControl
     public event StreamStarted? StreamStartedEvent;
     public event StreamStopped? StreamStoppedEvent;
 
-    public void StartStream(string url, FitType fitType = FitType.Stretch)
+    public void StartStream(string url)
     {
-        _fitType = fitType;
         _player.Start(new Uri(url), _timeout);
     }
 
@@ -66,12 +64,13 @@ public partial class StreamPlayerControl : SKControl
         Invalidate();
     }
 
-    private void Player_FrameReadyEvent(SKBitmap frame)
+    private void Player_FrameReadyEvent(Bitmap frame)
     {
         lock (_currentFrameLock)
         {
             _currentFrame?.Dispose();
-            _currentFrame = frame;
+            _currentFrame = new Bitmap(frame, new Size(Width, Height));
+            frame.Dispose();
         }
 
         Invalidate();
