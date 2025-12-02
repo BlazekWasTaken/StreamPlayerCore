@@ -194,12 +194,12 @@ public sealed class StreamPlayer
     public void Stop(StreamStopReason reason = StreamStopReason.UserRequested)
     {
         if (!_started) return;
+        _started = false;
 
         _logger.LogInformation("Stream instance: {id}; Stopping stream.", _instanceId);
 
         _tokenSource.Cancel();
         OnStreamStopped(reason);
-        _started = false;
     }
 
     private static unsafe AVDictionary* GetAvDict(RtspTransport transport, RtspFlags flags, int analyzeDuration,
