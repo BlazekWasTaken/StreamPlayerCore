@@ -8,16 +8,16 @@ namespace StreamPlayerCore;
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public class FFmpegLogger
 {
-    private readonly av_log_set_callback_callback _logCallback;
-    
-    private readonly ILogger<FFmpegLogger> _logger;
     private readonly Guid _instanceId;
+    private readonly av_log_set_callback_callback _logCallback;
+
+    private readonly ILogger<FFmpegLogger> _logger;
 
     public unsafe FFmpegLogger(ILoggerFactory loggerFactory, int ffmpegLogLevel, Guid instanceId)
     {
         _instanceId = instanceId;
         _logger = loggerFactory.CreateLogger<FFmpegLogger>();
-        
+
         _logCallback = (p0, level, format, vl) =>
         {
             if (level > ffmpeg.av_log_get_level()) return;
@@ -28,13 +28,13 @@ public class FFmpegLogger
             ffmpeg.av_log_format_line(p0, level, format, vl, lineBuffer, lineSize, &printPrefix);
             var line = Marshal.PtrToStringAnsi((IntPtr)lineBuffer);
             if (line == null) return;
-            
+
             Log(line.Trim(), level);
         };
-        
+
         SetupLogging(ffmpegLogLevel);
     }
-    
+
     private void Log(string message, int level)
     {
         switch (level)
@@ -79,19 +79,19 @@ public class FFmpegLogger
                 break;
         }
     }
-    
+
     private void SetupLogging(int ffmpegLogLevel)
     {
         ffmpeg.av_log_set_level(ffmpegLogLevel);
-        
+
         _logger.LogInformation("Stream instance: {id}; FFmpeg logging set up with level: {logLevel} ({ffmpegLogLevel})",
             _instanceId,
             LogLevelToString(ffmpegLogLevel),
             ffmpegLogLevel);
-        
+
         ffmpeg.av_log_set_callback(_logCallback);
     }
-    
+
     private static string LogLevelToString(int ffmpegLogLevel)
     {
         return ffmpegLogLevel switch

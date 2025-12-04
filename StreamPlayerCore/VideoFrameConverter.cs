@@ -18,22 +18,22 @@ public sealed unsafe class VideoFrameConverter : IDisposable
     private readonly Size _destinationSize;
     private readonly byte_ptrArray4 _dstData;
     private readonly int_array4 _dstLineSize;
-    private readonly SwsContext* _pConvertContext;
-    
-    private readonly ILogger<VideoFrameConverter> _logger;
     private readonly Guid _instanceId;
+
+    private readonly ILogger<VideoFrameConverter> _logger;
+    private readonly SwsContext* _pConvertContext;
 
     public VideoFrameConverter(ILoggerFactory loggerFactory,
         Size sourceSize, AVPixelFormat sourcePixelFormat,
         Size destinationSize, AVPixelFormat destinationPixelFormat,
         Guid instanceId = default)
     {
-        _logger = loggerFactory?.CreateLogger<VideoFrameConverter>() 
+        _logger = loggerFactory?.CreateLogger<VideoFrameConverter>()
                   ?? NullLoggerFactory.Instance.CreateLogger<VideoFrameConverter>();
         _instanceId = instanceId;
-        
+
         _logger.LogInformation("Stream instance: {id}; Creating VideoFrameConverter.", _instanceId);
-        
+
         _destinationSize = destinationSize;
 
         _pConvertContext = ffmpeg.sws_getContext(sourceSize.Width,

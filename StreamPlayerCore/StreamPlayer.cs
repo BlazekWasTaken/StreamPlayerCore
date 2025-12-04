@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
+using System.Drawing;
+using System.Drawing.Imaging;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using SkiaSharp;
 
 namespace StreamPlayerCore;
 
@@ -24,22 +23,38 @@ public enum RtspFlags
     PreferTcp = 3
 }
 
-public delegate void FrameReady(SKBitmap frame);
+public enum StreamStopReason
+{
+    UserRequested = 0,
+    InitializationFailed = 1,
+    StreamEnded = 2
+}
+
+public delegate void FrameReady(Bitmap frame);
+
+public delegate void StreamStarted();
+
+public delegate void StreamStopped(StreamStopReason reason);
 
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed class StreamPlayer
 {
-    private readonly AVHWDeviceType _hwDecodeDeviceType;
-    private readonly unsafe AVDictionary* _optionsPtr;
-
-    private readonly CancellationTokenSource _tokenSource = new();
-    private bool _started;
-    
-    private readonly Guid _instanceId = Guid.NewGuid();
-    
-    private ILoggerFactory _loggerFactory;
-    private readonly ILogger<StreamPlayer> _logger;
+    private readonly int _analyzeDuration;
     private readonly FFmpegLogger _ffmpegLogger;
+    private readonly AVHWDeviceType _hwDecodeDeviceType;
+
+    private readonly Guid _instanceId = Guid.NewGuid();
+    private readonly ILogger<StreamPlayer> _logger;
+
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly int _probeSize;
+    private readonly RtspFlags _rtspFlags;
+
+    private readonly RtspTransport _rtspTransport;
+
+    private bool _started;
+
+    private CancellationTokenSource _tokenSource = new();
 
     public StreamPlayer(ILoggerFactory loggerFactory,
         RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
@@ -49,30 +64,34 @@ public sealed class StreamPlayer
     {
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<StreamPlayer>();
-        
+
         ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg");
         DynamicallyLoadedBindings.Initialize();
-        _logger.LogInformation("Stream instance: {id}; FFmpeg libraries loaded from: {ffmpegRootPath}; Version info: {ffmpegVersionInfo}",
+        _logger.LogInformation(
+            "Stream instance: {id}; FFmpeg libraries loaded from: {ffmpegRootPath}; Version info: {ffmpegVersionInfo}",
             _instanceId,
             ffmpeg.RootPath,
             ffmpeg.av_version_info());
-        unsafe
-        {
-            _optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
-        }
+
+        _rtspTransport = transport;
+        _rtspFlags = flags;
+        _analyzeDuration = analyzeDuration;
+        _probeSize = probeSize;
 
         _hwDecodeDeviceType = hwDecodeDeviceType;
-
         _ffmpegLogger = new FFmpegLogger(loggerFactory, ffmpegLogLevel, _instanceId);
     }
 
     public event FrameReady? FrameReadyEvent;
+    public event StreamStarted? StreamStartedEvent;
+    public event StreamStopped? StreamStoppedEvent;
 
-    public unsafe void Start(Uri streamSource)
+    public unsafe void Start(Uri streamSource, TimeSpan timeout)
     {
         if (_started) return;
         _started = true;
-        
+        _tokenSource = new CancellationTokenSource();
+
         var sourceWithoutCredentials = new UriBuilder(streamSource)
         {
             UserName = string.Empty,
@@ -81,24 +100,42 @@ public sealed class StreamPlayer
         _logger.LogInformation("Stream instance: {id}; Starting stream from source: {source}",
             _instanceId,
             sourceWithoutCredentials.ToString());
-        
+
         Task.Run(() =>
         {
-            using var vsd = new VideoStreamDecoder(_loggerFactory,
-                streamSource.AbsoluteUri,
-                _hwDecodeDeviceType,
-                _optionsPtr,
-                _instanceId);
+            VideoStreamDecoder? vsd = null;
+            var optionsPtr = GetAvDict(_rtspTransport, _rtspFlags, _analyzeDuration, _probeSize);
+            try
+            {
+                vsd = new VideoStreamDecoder(_loggerFactory,
+                    streamSource.AbsoluteUri,
+                    _hwDecodeDeviceType,
+                    optionsPtr,
+                    _instanceId,
+                    timeout);
+            }
+            catch (FFmpegInitException)
+            {
+                _logger.LogInformation(
+                    "Stream instance: {id}; Failed to initialize video stream decoder.",
+                    _instanceId);
+                vsd?.Dispose();
+                vsd = null;
+                Stop(StreamStopReason.InitializationFailed);
+                return;
+            }
 
             if (vsd.FrameSize.Width == 0 || vsd.FrameSize.Height == 0 ||
                 vsd.PixelFormat == AVPixelFormat.AV_PIX_FMT_NONE)
             {
-                _logger.LogError("Stream instance: {id}; Invalid video stream parameters. Stopping the stream.",
+                _logger.LogError("Stream instance: {id}; Invalid video stream parameters.",
                     _instanceId);
-                Stop();
+                vsd?.Dispose();
+                vsd = null;
+                Stop(StreamStopReason.InitializationFailed);
                 return;
             }
-            
+
             _logger.LogInformation("Stream instance: {id}; Video stream opened; Codec: {codecName}; " +
                                    "Source size: {width}x{height}; Source pixel format: {pixelFormat}",
                 _instanceId,
@@ -122,40 +159,47 @@ public sealed class StreamPlayer
                     destinationPixelFormat,
                     _instanceId);
 
-            while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
+            var started = false;
+            try
             {
-                var convertedFrame = vfc.Convert(frame);
-                var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888,
-                    SKAlphaType.Opaque);
-                var bitmap = new SKBitmap();
-
-                bitmap.InstallPixels(imageInfo, (IntPtr)convertedFrame.data[0]);
-                if (bitmap.IsEmpty || bitmap.IsNull ||
-                    bitmap.Width == 0 || bitmap.Height == 0 ||
-                    bitmap.BytesPerPixel == 0 || bitmap.RowBytes == 0 ||
-                    bitmap.Info.ColorType == SKColorType.Unknown || bitmap.Info.AlphaType == SKAlphaType.Unknown ||
-                    !bitmap.ReadyToDraw)
+                while (!_tokenSource.IsCancellationRequested && vsd.TryDecodeNextFrame(out var frame))
                 {
-                    _logger.LogError("Stream instance: {id}; Invalid bitmap created from frame. Skipping frame.", _instanceId);
-                    bitmap.Dispose();
-                    continue;
-                }
+                    if (!started)
+                    {
+                        OnStreamStarted();
+                        started = true;
+                    }
 
-                Task.Delay(5).Wait();
-                OnProcessCompleted(bitmap);
+                    var convertedFrame = vfc.Convert(frame);
+#pragma warning disable CA1416
+                    var bitmap = new Bitmap(convertedFrame.width, convertedFrame.height, convertedFrame.linesize[0],
+                        PixelFormat.Format32bppRgb, (IntPtr)convertedFrame.data[0]);
+#pragma warning restore CA1416
+                    OnFrameReady(bitmap);
+                }
             }
+            catch (FFmpegException e)
+            {
+                _logger.LogError("Stream instance: {id}; FFmpeg exception occurred: {message}",
+                    _instanceId,
+                    e.Message);
+            }
+
+            vsd.Dispose();
+            vsd = null;
+            if (!_tokenSource.IsCancellationRequested) Stop(StreamStopReason.StreamEnded);
         }, _tokenSource.Token);
     }
 
-    public void Stop()
+    public void Stop(StreamStopReason reason = StreamStopReason.UserRequested)
     {
         if (!_started) return;
-        
-        _logger.LogInformation("Stream instance: {id}; Stopping stream.",
-            _instanceId);
-        
-        _tokenSource.Cancel();
         _started = false;
+
+        _logger.LogInformation("Stream instance: {id}; Stopping stream.", _instanceId);
+
+        _tokenSource.Cancel();
+        OnStreamStopped(reason);
     }
 
     private static unsafe AVDictionary* GetAvDict(RtspTransport transport, RtspFlags flags, int analyzeDuration,
@@ -222,8 +266,20 @@ public sealed class StreamPlayer
         };
     }
 
-    private void OnProcessCompleted(SKBitmap frame)
+    private void OnFrameReady(Bitmap frame)
     {
         FrameReadyEvent?.Invoke(frame);
+    }
+
+    private void OnStreamStarted()
+    {
+        _logger.LogInformation("Stream instance: {id}; Stream started.", _instanceId);
+        StreamStartedEvent?.Invoke();
+    }
+
+    private void OnStreamStopped(StreamStopReason reason)
+    {
+        _logger.LogInformation("Stream instance: {id}; Stream stopped; Reason: {reason}", _instanceId, reason);
+        StreamStoppedEvent?.Invoke(reason);
     }
 }

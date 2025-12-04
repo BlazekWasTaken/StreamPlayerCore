@@ -6,27 +6,39 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageId>StreamPlayerCore</PackageId>
-        <Version>2.0.0</Version>
+        <Version>2.1.4</Version>
         <Title>StreamPlayerCore</Title>
         <Authors>Błażej Dymek</Authors>
-        <Description>C# library for video streaming based on FFmpeg.AutoGen and SkiaSharp</Description>
+        <Description>C# library for video streaming based on FFmpeg.AutoGen</Description>
         <PackageProjectUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</PackageProjectUrl>
         <RepositoryUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</RepositoryUrl>
-        <PackageTags>Stream, RTSP, FFmpeg, Skia</PackageTags>
+        <PackageTags>Stream, RTSP, FFmpeg</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <EmbedAllSources>true</EmbedAllSources>
+        <DebugType>Embedded</DebugType>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
-        <PackageReference Include="SkiaSharp" Version="3.119.1"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0"/>
+        <PackageReference Include="System.Drawing.Common" Version="6.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="ffmpeg\**" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="lib\$(TargetFramework)\ffmpeg"/>
         <None Include="..\LICENSE" Pack="true" PackagePath=""/>
         <None Include="README.md" Pack="true" PackagePath=""/>
     </ItemGroup>
-    
+
+    <ItemGroup Label="FilesToCopy">
+        <Content Include="StreamPlayerCore.targets" PackagePath="build/StreamPlayerCore.targets"/>
+        <Content Include="ffmpeg\**" Pack="true" PackagePath="contentFiles\ffmpeg">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+        </Content>
+    </ItemGroup>
+
 </Project>

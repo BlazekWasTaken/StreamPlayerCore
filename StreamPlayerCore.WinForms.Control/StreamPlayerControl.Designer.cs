@@ -2,7 +2,7 @@
 
 namespace StreamPlayerCore.WinForms.Control;
 
-partial class StreamPlayerControl
+sealed partial class StreamPlayerControl
 {
     /// <summary> 
     /// Required designer variable.
