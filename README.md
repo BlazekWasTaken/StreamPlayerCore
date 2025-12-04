@@ -21,4 +21,4 @@ WinForms control for video streaming using FFmpeg. Uses the core library to prov
 
 ## License
 
-This project is licensed under the LGPLv3 License. See the [LICENSE](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.4/LICENSE) file for details.
+This project is licensed under the LGPLv3 License. See the [LICENSE](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.5/LICENSE) file for details.

@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <PackageId>StreamPlayerCore.Helper</PackageId>
-        <Version>2.1.4</Version>
+        <Version>2.1.5</Version>
         <Title>StreamPlayerCore.Helper</Title>
         <Authors>Błażej Dymek</Authors>
         <Description>Helper library for StreamPlayerCore controls</Description>

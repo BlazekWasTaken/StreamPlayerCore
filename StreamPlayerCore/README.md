@@ -18,9 +18,9 @@ Install-Package StreamPlayerCore
 ## Usage
 
 For a complete example of using StreamPlayerCore, please refer to
-the [StreamPlayerCore.WinForms.Control](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.4/StreamPlayerCore.WinForms.Control/README.md)
-and [StreamPlayerCore.WPF.Control](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.4/StreamPlayerCore.WPF.Control/README.md) projects.
+the [StreamPlayerCore.WinForms.Control](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.5/StreamPlayerCore.WinForms.Control/README.md)
+and [StreamPlayerCore.WPF.Control](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.5/StreamPlayerCore.WPF.Control/README.md) projects.
 
 ## License
 
-This project is licensed under the LGPLv3 License. See the [LICENSE](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.4/LICENSE) file for details.
+This project is licensed under the LGPLv3 License. See the [LICENSE](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.5/LICENSE) file for details.

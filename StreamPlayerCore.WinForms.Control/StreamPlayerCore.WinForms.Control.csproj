@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWindowsForms>true</UseWindowsForms>
         <PackageId>StreamPlayerCore.WinForms.Control</PackageId>
-        <Version>2.1.4</Version>
+        <Version>2.1.5</Version>
         <Title>StreamPlayerCore.WinForms.Control</Title>
         <Authors>Błażej Dymek</Authors>
         <Description>WinForms control for video streaming based on FFmpeg.AutoGen</Description>
