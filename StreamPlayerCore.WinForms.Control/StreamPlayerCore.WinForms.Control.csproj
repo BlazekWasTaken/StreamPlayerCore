@@ -3,25 +3,24 @@
     <PropertyGroup>
         <TargetFramework>net10.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
-        <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UseWindowsForms>true</UseWindowsForms>
         <PackageId>StreamPlayerCore.WinForms.Control</PackageId>
-        <Version>2.1.0</Version>
+        <Version>2.1.2</Version>
         <Title>StreamPlayerCore.WinForms.Control</Title>
         <Authors>Błażej Dymek</Authors>
-        <Description>WinForms control for video streaming based on FFmpeg.AutoGen and SkiaSharp</Description>
+        <Description>WinForms control for video streaming based on FFmpeg.AutoGen</Description>
         <PackageProjectUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</PackageProjectUrl>
         <RepositoryUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</RepositoryUrl>
-        <PackageTags>Stream, RTSP, WinForms, FFmpeg, Skia</PackageTags>
+        <PackageTags>Stream, RTSP, WinForms, FFmpeg</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="OpenTK" Version="4.9.4"/>
-        <PackageReference Include="OpenTK.GLControl" Version="4.0.2"/>
-        <PackageReference Include="SkiaSharp.Views.WindowsForms" Version="3.119.1"/>
-    </ItemGroup>
+    <PropertyGroup>
+        <EmbedAllSources>true</EmbedAllSources>
+        <DebugType>Embedded</DebugType>
+    </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\StreamPlayerCore.Helper\StreamPlayerCore.Helper.csproj"/>

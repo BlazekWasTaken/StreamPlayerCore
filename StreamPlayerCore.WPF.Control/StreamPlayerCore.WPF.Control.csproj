@@ -3,25 +3,24 @@
     <PropertyGroup>
         <TargetFramework>net10.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
-        <UseWPF>true</UseWPF>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
         <PackageId>StreamPlayerCore.WPF.Control</PackageId>
-        <Version>2.1.0</Version>
+        <Version>2.1.2</Version>
         <Title>StreamPlayerCore.WPF.Control</Title>
         <Authors>Błażej Dymek</Authors>
-        <Description>WPF control for video streaming based on FFmpeg.AutoGen and SkiaSharp</Description>
+        <Description>WPF control for video streaming based on FFmpeg.AutoGen</Description>
         <PackageProjectUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</PackageProjectUrl>
         <RepositoryUrl>https://github.com/BlazekWasTaken/StreamPlayerCore</RepositoryUrl>
-        <PackageTags>Stream, RTSP, WPF, FFmpeg, Skia</PackageTags>
+        <PackageTags>Stream, RTSP, WPF, FFmpeg</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="OpenTK" Version="4.9.4"/>
-        <PackageReference Include="OpenTK.GLWpfControl" Version="4.3.3"/>
-        <PackageReference Include="SkiaSharp.Views.WPF" Version="3.119.1"/>
-    </ItemGroup>
+    <PropertyGroup>
+        <EmbedAllSources>true</EmbedAllSources>
+        <DebugType>Embedded</DebugType>
+    </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\StreamPlayerCore.Helper\StreamPlayerCore.Helper.csproj"/>

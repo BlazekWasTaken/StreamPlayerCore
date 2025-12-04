@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Drawing.Imaging;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
-using SkiaSharp;
 
 namespace StreamPlayerCore;
 
@@ -29,7 +30,7 @@ public enum StreamStopReason
     StreamEnded = 2
 }
 
-public delegate void FrameReady(SKBitmap frame);
+public delegate void FrameReady(Bitmap frame);
 
 public delegate void StreamStarted();
 
@@ -38,6 +39,7 @@ public delegate void StreamStopped(StreamStopReason reason);
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed class StreamPlayer
 {
+    private readonly int _analyzeDuration;
     private readonly FFmpegLogger _ffmpegLogger;
     private readonly AVHWDeviceType _hwDecodeDeviceType;
 
@@ -45,12 +47,11 @@ public sealed class StreamPlayer
     private readonly ILogger<StreamPlayer> _logger;
 
     private readonly ILoggerFactory _loggerFactory;
-    
-    private readonly RtspTransport _rtspTransport;
-    private readonly RtspFlags _rtspFlags;
-    private readonly int _analyzeDuration;
     private readonly int _probeSize;
-    
+    private readonly RtspFlags _rtspFlags;
+
+    private readonly RtspTransport _rtspTransport;
+
     private bool _started;
 
     private CancellationTokenSource _tokenSource = new();
@@ -71,7 +72,7 @@ public sealed class StreamPlayer
             _instanceId,
             ffmpeg.RootPath,
             ffmpeg.av_version_info());
-        
+
         _rtspTransport = transport;
         _rtspFlags = flags;
         _analyzeDuration = analyzeDuration;
@@ -170,28 +171,11 @@ public sealed class StreamPlayer
                     }
 
                     var convertedFrame = vfc.Convert(frame);
-                    var imageInfo = new SKImageInfo(convertedFrame.width, convertedFrame.height, SKColorType.Bgra8888,
-                        SKAlphaType.Opaque);
-                    var bitmap = new SKBitmap();
-
-                    bitmap.InstallPixels(imageInfo, (IntPtr)convertedFrame.data[0]);
-                    if (bitmap.IsEmpty || bitmap.IsNull ||
-                        bitmap.Width == 0 || bitmap.Height == 0 ||
-                        bitmap.BytesPerPixel == 0 || bitmap.RowBytes == 0 ||
-                        bitmap.Info.ColorType == SKColorType.Unknown || bitmap.Info.AlphaType == SKAlphaType.Unknown ||
-                        !bitmap.ReadyToDraw)
-                    {
-                        _logger.LogError("Stream instance: {id}; Invalid bitmap created from frame. Skipping frame.",
-                            _instanceId);
-                        bitmap.Dispose();
-                        continue;
-                    }
-
-                    // Task.Delay(5).Wait();
-                    OnFrameReady(bitmap.Copy());
-                    bitmap.Dispose();
-                    bitmap = null;
-                    GC.Collect();
+#pragma warning disable CA1416
+                    var bitmap = new Bitmap(convertedFrame.width, convertedFrame.height, convertedFrame.linesize[0],
+                        PixelFormat.Format32bppRgb, (IntPtr)convertedFrame.data[0]);
+#pragma warning restore CA1416
+                    OnFrameReady(bitmap);
                 }
             }
             catch (FFmpegException e)
@@ -210,12 +194,12 @@ public sealed class StreamPlayer
     public void Stop(StreamStopReason reason = StreamStopReason.UserRequested)
     {
         if (!_started) return;
+        _started = false;
 
         _logger.LogInformation("Stream instance: {id}; Stopping stream.", _instanceId);
 
         _tokenSource.Cancel();
         OnStreamStopped(reason);
-        _started = false;
     }
 
     private static unsafe AVDictionary* GetAvDict(RtspTransport transport, RtspFlags flags, int analyzeDuration,
@@ -282,7 +266,7 @@ public sealed class StreamPlayer
         };
     }
 
-    private void OnFrameReady(SKBitmap frame)
+    private void OnFrameReady(Bitmap frame)
     {
         FrameReadyEvent?.Invoke(frame);
     }
