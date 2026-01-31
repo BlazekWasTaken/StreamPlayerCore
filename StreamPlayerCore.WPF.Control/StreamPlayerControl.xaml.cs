@@ -22,27 +22,20 @@ public class PlayerOptions
     public RtspFlags Flags { get; set; } = RtspFlags.None;
     public int AnalyzeDuration { get; set; } = 0;
     public int ProbeSize { get; set; } = 65536;
-    public AVHWDeviceType HwDeviceType { get; set; } = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE; // TODO: IOptions
-    public FFmpegLogLevel FfmpegLogLevel = FFmpegLogLevel.AvLogDebug; // TODO: IOptions
 }
 
 public partial class StreamPlayerControl
 {
+    // ReSharper disable once MemberCanBePrivate.Global
+    public PlayerOptions Options { get; set; } = new();
+    
     private readonly IServiceProvider _serviceProvider;
-    
-    private PlayerOptions _options = new();
-    
     private StreamPlayer? _player;
 
     public StreamPlayerControl(IServiceProvider serviceProvider)
     {
         InitializeComponent();
         _serviceProvider = serviceProvider;
-    }
-    
-    public void Configure(PlayerOptions options)
-    {
-        _options = options;
     }
 
     public event StreamStarted? StreamStartedEvent;
@@ -56,7 +49,7 @@ public partial class StreamPlayerControl
         _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
         _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
         
-        _player.Start(new Uri(url), _options.Timeout);
+        _player.Start(new Uri(url), Options.Timeout);
     }
 
     public void StopStream()

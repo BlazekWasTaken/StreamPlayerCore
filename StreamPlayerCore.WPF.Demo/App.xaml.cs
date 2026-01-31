@@ -3,6 +3,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using StreamPlayerCore.Helper;
+using StreamPlayerCore.Options;
 using StreamPlayerCore.WPF.Control;
 
 namespace StreamPlayerCore.WPF.Demo;
@@ -28,6 +30,12 @@ public partial class App
             loggingBuilder.AddSerilog(serilogLogger);
         });
 
+        serviceCollection.Configure<FfmpegOptions>(options =>
+        {
+            options.LogLevel = (int)FFmpegLogLevel.AvLogQuiet;
+        });
+        
+         serviceCollection.TryAddScoped<StreamPlayerControl>();
         serviceCollection.AddScoped<FfmpegLogger>();
         serviceCollection.AddScoped<StreamPlayer>();
         serviceCollection.AddScoped<StreamPlayerControl>();

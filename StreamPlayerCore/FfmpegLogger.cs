@@ -2,14 +2,18 @@
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using StreamPlayerCore.Options;
 
 namespace StreamPlayerCore;
 
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
-public class FfmpegLogger(ILogger<FfmpegLogger> logger)
+public class FfmpegLogger(ILogger<FfmpegLogger> logger, IOptions<FfmpegOptions> ffmpegOptions)
 {
     private Guid _instanceId;
     private av_log_set_callback_callback? _logCallback;
+    
+    private readonly int _ffmpegLogLevel = ffmpegOptions.Value.LogLevel;
 
     public unsafe void Initialize(Guid? instanceId = null)
     {
@@ -29,7 +33,7 @@ public class FfmpegLogger(ILogger<FfmpegLogger> logger)
             Log(line.Trim(), level);
         };
 
-        SetupLogging(ffmpegLogLevel); // TODO: IOptions
+        SetupLogging();
     }
 
     private void Log(string message, int level)
@@ -77,14 +81,14 @@ public class FfmpegLogger(ILogger<FfmpegLogger> logger)
         }
     }
 
-    private void SetupLogging(int ffmpegLogLevel)
+    private void SetupLogging()
     {
-        ffmpeg.av_log_set_level(ffmpegLogLevel);
+        ffmpeg.av_log_set_level(_ffmpegLogLevel);
 
         logger.LogInformation("Stream instance: {id}; FFmpeg logging set up with level: {logLevel} ({ffmpegLogLevel})",
             _instanceId,
-            LogLevelToString(ffmpegLogLevel),
-            ffmpegLogLevel);
+            LogLevelToString(_ffmpegLogLevel),
+            _ffmpegLogLevel);
 
         ffmpeg.av_log_set_callback(_logCallback);
     }

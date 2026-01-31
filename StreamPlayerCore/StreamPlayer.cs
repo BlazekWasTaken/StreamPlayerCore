@@ -3,7 +3,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StreamPlayerCore.Enums;
+using StreamPlayerCore.Options;
 
 namespace StreamPlayerCore;
 
@@ -16,28 +18,20 @@ public delegate void StreamStopped(StreamStopReason reason);
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed class StreamPlayer
 {
-    private readonly int _analyzeDuration;
     private readonly AVHWDeviceType _hwDecodeDeviceType;
 
     private readonly Guid _instanceId = Guid.NewGuid();
     private readonly ILogger<StreamPlayer> _logger;
 
-    private readonly int _probeSize;
-    private readonly RtspFlags _rtspFlags;
-
-    private readonly RtspTransport _rtspTransport;
-
     private bool _started;
 
     private CancellationTokenSource _tokenSource = new();
 
-    public StreamPlayer(ILogger<StreamPlayer> logger, FfmpegLogger ffmpegLogger,
-        RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
-        int analyzeDuration = 0, int probeSize = 65536,
-        AVHWDeviceType hwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-        int ffmpegLogLevel = ffmpeg.AV_LOG_VERBOSE)
+    public StreamPlayer(ILogger<StreamPlayer> logger, IOptions<FfmpegOptions> options, FfmpegLogger ffmpegLogger,
+        )
     {
         _logger = logger;
+        _hwDecodeDeviceType = options.Value.HwDecodeDeviceType;
 
         ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg");
         DynamicallyLoadedBindings.Initialize();
@@ -46,13 +40,6 @@ public sealed class StreamPlayer
             _instanceId,
             ffmpeg.RootPath,
             ffmpeg.av_version_info());
-
-        _rtspTransport = transport;
-        _rtspFlags = flags;
-        _analyzeDuration = analyzeDuration;
-        _probeSize = probeSize;
-
-        _hwDecodeDeviceType = hwDecodeDeviceType;
         
         ffmpegLogger.Initialize(Guid.NewGuid());
     }
@@ -61,7 +48,8 @@ public sealed class StreamPlayer
     public event StreamStarted? StreamStartedEvent;
     public event StreamStopped? StreamStoppedEvent;
 
-    public unsafe void Start(Uri streamSource, TimeSpan timeout)
+    public unsafe void Start(Uri streamSource, TimeSpan timeout, RtspTransport transport = RtspTransport.Undefined, 
+        RtspFlags flags = RtspFlags.None, int analyzeDuration = 0, int probeSize = 65536)
     {
         if (_started) return;
         _started = true;
@@ -79,7 +67,7 @@ public sealed class StreamPlayer
         Task.Run(() =>
         {
             VideoStreamDecoder? vsd = null;
-            var optionsPtr = GetAvDict(_rtspTransport, _rtspFlags, _analyzeDuration, _probeSize);
+            var optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
             try
             {
                 vsd = new VideoStreamDecoder(_loggerFactory,
