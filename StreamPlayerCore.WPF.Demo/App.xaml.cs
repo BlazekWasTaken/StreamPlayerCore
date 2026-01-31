@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using StreamPlayerCore.Helper;
+using StreamPlayerCore.Enums;
 using StreamPlayerCore.Options;
 using StreamPlayerCore.WPF.Control;
 
@@ -31,7 +31,7 @@ public partial class App
 
         serviceCollection.AddStreamPlayerCoreServices(new FfmpegOptions
         {
-            LogLevel = (int)FFmpegLogLevel.AvLogDebug,
+            LogLevel = (int)FfmpegLogLevel.AvLogDebug,
             Timeout = TimeSpan.FromSeconds(10)
         });
         

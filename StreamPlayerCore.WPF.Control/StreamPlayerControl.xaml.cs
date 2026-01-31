@@ -3,11 +3,8 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using FFmpeg.AutoGen;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using StreamPlayerCore.Enums;
-using StreamPlayerCore.Helper;
 
 namespace StreamPlayerCore.WPF.Control;
 
@@ -28,13 +25,18 @@ public partial class StreamPlayerControl
     // ReSharper disable once MemberCanBePrivate.Global
     public PlayerOptions Options { get; } = new();
     
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private StreamPlayer? _player;
+    private readonly StreamPlayer _player;
 
     public StreamPlayerControl(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
-        _serviceScopeFactory = serviceScopeFactory;
+        
+        using var scope = serviceScopeFactory.CreateScope();
+        _player = scope.ServiceProvider.GetRequiredService<StreamPlayer>();
+        
+        _player.FrameReadyEvent += Player_FrameReadyEvent;
+        _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
+        _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
     }
 
     public event StreamStarted? StreamStartedEvent;
@@ -42,13 +44,6 @@ public partial class StreamPlayerControl
 
     public void StartStream(string url)
     {
-        using var scope = _serviceScopeFactory.CreateScope();
-        _player = scope.ServiceProvider.GetRequiredService<StreamPlayer>();
-        
-        _player.FrameReadyEvent += Player_FrameReadyEvent;
-        _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
-        _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
-        
         _player.Start(new Uri(url),
             Options.Transport,
             Options.Flags,

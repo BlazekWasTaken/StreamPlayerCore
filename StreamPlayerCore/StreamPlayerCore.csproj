@@ -42,8 +42,4 @@
         </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\StreamPlayerCore.Helper\StreamPlayerCore.Helper.csproj" />
-    </ItemGroup>
-
 </Project>

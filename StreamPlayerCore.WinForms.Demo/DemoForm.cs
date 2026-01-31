@@ -1,18 +1,19 @@
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using StreamPlayerCore.WinForms.Control;
 
 namespace StreamPlayerCore.WinForms.Demo;
 
 public partial class DemoForm : Form
 {
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+    
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
 
-    public DemoForm(ILoggerFactory loggerFactory)
+    public DemoForm(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
-        _loggerFactory = loggerFactory;
+        _serviceScopeFactory = serviceScopeFactory;
 
         ResizeBegin += (_, _) => SuspendLayout();
         ResizeEnd += (_, _) => ResumeLayout();
@@ -22,7 +23,8 @@ public partial class DemoForm : Form
     {
         if (_player1 != null) return;
         var rtspUrl = tbUrl1.Text;
-        _player1 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(5));
+        using var scope = _serviceScopeFactory.CreateScope();
+        _player1 = scope.ServiceProvider.GetRequiredService<StreamPlayerControl>();
         _player1.StreamStartedEvent += () => { };
         _player1.StreamStoppedEvent += reason =>
         {
@@ -45,7 +47,8 @@ public partial class DemoForm : Form
     {
         if (_player2 != null) return;
         var rtspUrl = tbUrl2.Text;
-        _player2 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(5));
+        using var scope = _serviceScopeFactory.CreateScope();
+        _player2 = scope.ServiceProvider.GetRequiredService<StreamPlayerControl>();
         _player2.StreamStartedEvent += () => { };
         _player2.StreamStoppedEvent += reason =>
         {

@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using StreamPlayerCore.WPF.Control;
 
 namespace StreamPlayerCore.WPF.Demo;
