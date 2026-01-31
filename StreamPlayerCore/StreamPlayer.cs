@@ -2,10 +2,9 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using FFmpeg.AutoGen;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using StreamPlayerCore.Enums;
-using StreamPlayerCore.Options;
 
 namespace StreamPlayerCore;
 
@@ -18,20 +17,18 @@ public delegate void StreamStopped(StreamStopReason reason);
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public sealed class StreamPlayer
 {
-    private readonly AVHWDeviceType _hwDecodeDeviceType;
-
     private readonly Guid _instanceId = Guid.NewGuid();
     private readonly ILogger<StreamPlayer> _logger;
-
+    private readonly IServiceProvider _serviceProvider;
+    
     private bool _started;
 
     private CancellationTokenSource _tokenSource = new();
 
-    public StreamPlayer(ILogger<StreamPlayer> logger, IOptions<FfmpegOptions> options, FfmpegLogger ffmpegLogger,
-        )
+    public StreamPlayer(ILogger<StreamPlayer> logger, FfmpegLogger ffmpegLogger, IServiceProvider serviceProvider)
     {
         _logger = logger;
-        _hwDecodeDeviceType = options.Value.HwDecodeDeviceType;
+        _serviceProvider = serviceProvider;
 
         ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg");
         DynamicallyLoadedBindings.Initialize();
@@ -41,14 +38,14 @@ public sealed class StreamPlayer
             ffmpeg.RootPath,
             ffmpeg.av_version_info());
         
-        ffmpegLogger.Initialize(Guid.NewGuid());
+        ffmpegLogger.Initialize(_instanceId);
     }
 
     public event FrameReady? FrameReadyEvent;
     public event StreamStarted? StreamStartedEvent;
     public event StreamStopped? StreamStoppedEvent;
 
-    public unsafe void Start(Uri streamSource, TimeSpan timeout, RtspTransport transport = RtspTransport.Undefined, 
+    public unsafe void Start(Uri streamSource, RtspTransport transport = RtspTransport.Undefined, 
         RtspFlags flags = RtspFlags.None, int analyzeDuration = 0, int probeSize = 65536)
     {
         if (_started) return;
@@ -70,12 +67,8 @@ public sealed class StreamPlayer
             var optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
             try
             {
-                vsd = new VideoStreamDecoder(_loggerFactory,
-                    streamSource.AbsoluteUri,
-                    _hwDecodeDeviceType,
-                    optionsPtr,
-                    _instanceId,
-                    timeout);
+                vsd = _serviceProvider.GetRequiredService<VideoStreamDecoder>();
+                vsd.Initialize(streamSource.AbsoluteUri, optionsPtr, _instanceId);
             }
             catch (FFmpegInitException)
             {
@@ -108,9 +101,9 @@ public sealed class StreamPlayer
                 vsd.PixelFormat);
 
             var sourceSize = vsd.FrameSize;
-            var sourcePixelFormat = _hwDecodeDeviceType == AVHWDeviceType.AV_HWDEVICE_TYPE_NONE
+            var sourcePixelFormat = vsd.HwDecodeDeviceType == AVHWDeviceType.AV_HWDEVICE_TYPE_NONE
                 ? vsd.PixelFormat
-                : GetHwPixelFormat(_hwDecodeDeviceType);
+                : GetHwPixelFormat(vsd.HwDecodeDeviceType);
             // ReSharper disable once InlineTemporaryVariable
             var destinationSize = sourceSize;
             const AVPixelFormat destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;

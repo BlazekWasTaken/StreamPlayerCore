@@ -27,7 +27,7 @@ public class PlayerOptions
 public partial class StreamPlayerControl
 {
     // ReSharper disable once MemberCanBePrivate.Global
-    public PlayerOptions Options { get; set; } = new();
+    public PlayerOptions Options { get; } = new();
     
     private readonly IServiceProvider _serviceProvider;
     private StreamPlayer? _player;
@@ -49,7 +49,11 @@ public partial class StreamPlayerControl
         _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
         _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
         
-        _player.Start(new Uri(url), Options.Timeout);
+        _player.Start(new Uri(url),
+            Options.Transport,
+            Options.Flags,
+            Options.AnalyzeDuration,
+            Options.ProbeSize);
     }
 
     public void StopStream()
