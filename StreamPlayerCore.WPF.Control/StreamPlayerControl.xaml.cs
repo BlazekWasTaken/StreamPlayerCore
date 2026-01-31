@@ -4,7 +4,9 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using FFmpeg.AutoGen;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using StreamPlayerCore.Enums;
 using StreamPlayerCore.Helper;
 
 namespace StreamPlayerCore.WPF.Control;
@@ -13,29 +15,34 @@ public delegate void StreamStarted();
 
 public delegate void StreamStopped(StreamStopReason reason);
 
+public class PlayerOptions
+{
+    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(5);
+    public RtspTransport Transport { get; set; } = RtspTransport.Tcp;
+    public RtspFlags Flags { get; set; } = RtspFlags.None;
+    public int AnalyzeDuration { get; set; } = 0;
+    public int ProbeSize { get; set; } = 65536;
+    public AVHWDeviceType HwDeviceType { get; set; } = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE; // TODO: IOptions
+    public FFmpegLogLevel FfmpegLogLevel = FFmpegLogLevel.AvLogDebug; // TODO: IOptions
+}
+
 public partial class StreamPlayerControl
 {
-    private readonly StreamPlayer _player;
-    private readonly TimeSpan _timeout;
+    private readonly IServiceProvider _serviceProvider;
+    
+    private PlayerOptions _options = new();
+    
+    private StreamPlayer? _player;
 
-    public StreamPlayerControl(ILoggerFactory loggerFactory, TimeSpan timeout,
-        RtspTransport transport = RtspTransport.Tcp, RtspFlags flags = RtspFlags.None,
-        int analyzeDuration = 0, int probeSize = 65536,
-        AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-        FFmpegLogLevel ffmpegLogLevel = FFmpegLogLevel.AvLogDebug)
+    public StreamPlayerControl(IServiceProvider serviceProvider)
     {
         InitializeComponent();
-        _timeout = timeout;
-        _player = new StreamPlayer(loggerFactory,
-            transport,
-            flags,
-            analyzeDuration,
-            probeSize,
-            hwDeviceType,
-            (int)ffmpegLogLevel);
-        _player.FrameReadyEvent += Player_FrameReadyEvent;
-        _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
-        _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
+        _serviceProvider = serviceProvider;
+    }
+    
+    public void Configure(PlayerOptions options)
+    {
+        _options = options;
     }
 
     public event StreamStarted? StreamStartedEvent;
@@ -43,12 +50,18 @@ public partial class StreamPlayerControl
 
     public void StartStream(string url)
     {
-        _player.Start(new Uri(url), _timeout);
+        _player = _serviceProvider.GetRequiredService<StreamPlayer>();
+        
+        _player.FrameReadyEvent += Player_FrameReadyEvent;
+        _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
+        _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
+        
+        _player.Start(new Uri(url), _options.Timeout);
     }
 
     public void StopStream()
     {
-        _player.Stop();
+        _player?.Stop();
     }
 
     [DllImport("gdi32.dll")]

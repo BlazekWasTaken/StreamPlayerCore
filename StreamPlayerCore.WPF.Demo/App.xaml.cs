@@ -1,6 +1,9 @@
 ﻿using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using StreamPlayerCore.WPF.Control;
 
 namespace StreamPlayerCore.WPF.Demo;
 
@@ -16,10 +19,23 @@ public partial class App
             .WriteTo.File("log.txt", rollingInterval: RollingInterval.Minute)
             .WriteTo.Console()
             .CreateLogger();
+        
+        var serviceCollection = new ServiceCollection();
+        
+        serviceCollection.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.ClearProviders();
+            loggingBuilder.AddSerilog(serilogLogger);
+        });
 
-        var loggerFactory = new LoggerFactory().AddSerilog(serilogLogger);
-
-        var mainWindow = new MainWindow(loggerFactory);
+        serviceCollection.AddScoped<FfmpegLogger>();
+        serviceCollection.AddScoped<StreamPlayer>();
+        serviceCollection.AddScoped<StreamPlayerControl>();
+        serviceCollection.AddSingleton<MainWindow>();
+        
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        
+        var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
         mainWindow.Show();
     }
 }

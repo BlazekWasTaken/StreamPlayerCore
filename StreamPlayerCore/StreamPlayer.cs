@@ -3,32 +3,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
+using StreamPlayerCore.Enums;
 
 namespace StreamPlayerCore;
-
-public enum RtspTransport
-{
-    Undefined = 0,
-    Udp = 1,
-    Tcp = 2,
-    UdpMulticast = 3,
-    Http = 4
-}
-
-public enum RtspFlags
-{
-    None = 0,
-    FilterSrc = 1,
-    Listen = 2,
-    PreferTcp = 3
-}
-
-public enum StreamStopReason
-{
-    UserRequested = 0,
-    InitializationFailed = 1,
-    StreamEnded = 2
-}
 
 public delegate void FrameReady(Bitmap frame);
 
@@ -40,13 +17,11 @@ public delegate void StreamStopped(StreamStopReason reason);
 public sealed class StreamPlayer
 {
     private readonly int _analyzeDuration;
-    private readonly FFmpegLogger _ffmpegLogger;
     private readonly AVHWDeviceType _hwDecodeDeviceType;
 
     private readonly Guid _instanceId = Guid.NewGuid();
     private readonly ILogger<StreamPlayer> _logger;
 
-    private readonly ILoggerFactory _loggerFactory;
     private readonly int _probeSize;
     private readonly RtspFlags _rtspFlags;
 
@@ -56,14 +31,13 @@ public sealed class StreamPlayer
 
     private CancellationTokenSource _tokenSource = new();
 
-    public StreamPlayer(ILoggerFactory loggerFactory,
+    public StreamPlayer(ILogger<StreamPlayer> logger, FfmpegLogger ffmpegLogger,
         RtspTransport transport = RtspTransport.Undefined, RtspFlags flags = RtspFlags.None,
         int analyzeDuration = 0, int probeSize = 65536,
         AVHWDeviceType hwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
         int ffmpegLogLevel = ffmpeg.AV_LOG_VERBOSE)
     {
-        _loggerFactory = loggerFactory;
-        _logger = loggerFactory.CreateLogger<StreamPlayer>();
+        _logger = logger;
 
         ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg");
         DynamicallyLoadedBindings.Initialize();
@@ -79,7 +53,8 @@ public sealed class StreamPlayer
         _probeSize = probeSize;
 
         _hwDecodeDeviceType = hwDecodeDeviceType;
-        _ffmpegLogger = new FFmpegLogger(loggerFactory, ffmpegLogLevel, _instanceId);
+        
+        ffmpegLogger.Initialize(Guid.NewGuid());
     }
 
     public event FrameReady? FrameReadyEvent;
