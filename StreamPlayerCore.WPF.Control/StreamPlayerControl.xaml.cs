@@ -17,7 +17,6 @@ public delegate void StreamStopped(StreamStopReason reason);
 
 public class PlayerOptions
 {
-    public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(5);
     public RtspTransport Transport { get; set; } = RtspTransport.Tcp;
     public RtspFlags Flags { get; set; } = RtspFlags.None;
     public int AnalyzeDuration { get; set; } = 0;
@@ -29,13 +28,13 @@ public partial class StreamPlayerControl
     // ReSharper disable once MemberCanBePrivate.Global
     public PlayerOptions Options { get; } = new();
     
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private StreamPlayer? _player;
 
-    public StreamPlayerControl(IServiceProvider serviceProvider)
+    public StreamPlayerControl(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
-        _serviceProvider = serviceProvider;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public event StreamStarted? StreamStartedEvent;
@@ -43,7 +42,8 @@ public partial class StreamPlayerControl
 
     public void StartStream(string url)
     {
-        _player = _serviceProvider.GetRequiredService<StreamPlayer>();
+        using var scope = _serviceScopeFactory.CreateScope();
+        _player = scope.ServiceProvider.GetRequiredService<StreamPlayer>();
         
         _player.FrameReadyEvent += Player_FrameReadyEvent;
         _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };

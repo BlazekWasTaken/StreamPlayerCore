@@ -10,22 +10,23 @@ namespace StreamPlayerCore.WPF.Demo;
 /// </summary>
 public partial class MainWindow
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
 
-    public MainWindow(IServiceProvider serviceProvider)
+    public MainWindow(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
-        _serviceProvider = serviceProvider;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     private void BtnStart1_OnClick(object sender, RoutedEventArgs e)
     {
         if (_player1 != null) return;
         var rtspUrl = TbUrl1.Text;
-        _player1 = _serviceProvider.GetRequiredService<StreamPlayerControl>();
+        using var scope = _serviceScopeFactory.CreateScope();
+        _player1 = scope.ServiceProvider.GetRequiredService<StreamPlayerControl>();
         _player1.StreamStartedEvent += () => { };
         _player1.StreamStoppedEvent += reason =>
         {
@@ -46,7 +47,8 @@ public partial class MainWindow
     {
         if (_player2 != null) return;
         var rtspUrl = TbUrl2.Text;
-        _player2 = _serviceProvider.GetRequiredService<StreamPlayerControl>();
+        using var scope = _serviceScopeFactory.CreateScope();
+        _player2 = scope.ServiceProvider.GetRequiredService<StreamPlayerControl>();
         _player2.StreamStartedEvent += () => { };
         _player2.StreamStoppedEvent += reason =>
         {

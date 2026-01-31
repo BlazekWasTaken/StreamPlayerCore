@@ -29,16 +29,12 @@ public partial class App
             loggingBuilder.AddSerilog(serilogLogger);
         });
 
-        serviceCollection.Configure<FfmpegOptions>(options =>
+        serviceCollection.AddStreamPlayerCoreServices(new FfmpegOptions
         {
-            options.LogLevel = (int)FFmpegLogLevel.AvLogQuiet;
+            LogLevel = (int)FFmpegLogLevel.AvLogDebug,
+            Timeout = TimeSpan.FromSeconds(10)
         });
         
-        serviceCollection.AddScoped<VideoStreamDecoder>();
-        serviceCollection.AddScoped<VideoFrameConverter>();
-        serviceCollection.AddScoped<FfmpegLogger>();
-        serviceCollection.AddScoped<StreamPlayer>();
-        serviceCollection.AddScoped<StreamPlayerControl>();
         serviceCollection.AddSingleton<MainWindow>();
         
         var serviceProvider = serviceCollection.BuildServiceProvider();

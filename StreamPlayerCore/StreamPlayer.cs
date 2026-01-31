@@ -19,16 +19,16 @@ public sealed class StreamPlayer
 {
     private readonly Guid _instanceId = Guid.NewGuid();
     private readonly ILogger<StreamPlayer> _logger;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     
     private bool _started;
 
     private CancellationTokenSource _tokenSource = new();
 
-    public StreamPlayer(ILogger<StreamPlayer> logger, FfmpegLogger ffmpegLogger, IServiceProvider serviceProvider)
+    public StreamPlayer(ILogger<StreamPlayer> logger, FfmpegLogger ffmpegLogger, IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
-        _serviceProvider = serviceProvider;
+        _serviceScopeFactory = serviceScopeFactory;
 
         ffmpeg.RootPath = Path.Join(Environment.CurrentDirectory, "ffmpeg");
         DynamicallyLoadedBindings.Initialize();
@@ -63,11 +63,12 @@ public sealed class StreamPlayer
 
         Task.Run(() =>
         {
+            var scope = _serviceScopeFactory.CreateScope();
             VideoStreamDecoder? vsd = null;
             var optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
             try
             {
-                vsd = _serviceProvider.GetRequiredService<VideoStreamDecoder>();
+                vsd = scope.ServiceProvider.GetRequiredService<VideoStreamDecoder>();
                 vsd.Initialize(streamSource.AbsoluteUri, optionsPtr, _instanceId);
             }
             catch (FFmpegInitException)
@@ -108,7 +109,7 @@ public sealed class StreamPlayer
             var destinationSize = sourceSize;
             const AVPixelFormat destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;
             
-            using var vfc = _serviceProvider.GetRequiredService<VideoFrameConverter>();
+            using var vfc = scope.ServiceProvider.GetRequiredService<VideoFrameConverter>();
             vfc.Initialize(sourceSize,
                 sourcePixelFormat,
                 destinationSize,
