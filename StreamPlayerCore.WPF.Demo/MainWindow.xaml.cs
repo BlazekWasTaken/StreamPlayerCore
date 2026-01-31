@@ -10,7 +10,7 @@ namespace StreamPlayerCore.WPF.Demo;
 /// </summary>
 public partial class MainWindow
 {
-    private IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
     
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;

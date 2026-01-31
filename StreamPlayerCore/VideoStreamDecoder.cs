@@ -16,38 +16,31 @@ using AVPixelFormat = FFmpeg.AutoGen.AVPixelFormat;
 namespace StreamPlayerCore;
 
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
-public sealed unsafe class VideoStreamDecoder : IDisposable
+public sealed unsafe class VideoStreamDecoder(ILogger<VideoStreamDecoder> logger, IOptions<FfmpegOptions> options)
+    : IDisposable
 {
     private bool _initialized;
     
     private Guid _instanceId;
-    private readonly ILogger<VideoStreamDecoder> _logger;
-    
-    private readonly TimeSpan _timeout;
+
+    private readonly TimeSpan _timeout = options.Value.Timeout;
     
     public string CodecName { get; private set; } = string.Empty;
     public Size FrameSize { get; private set; }
     public AVPixelFormat PixelFormat { get; private set; }
-    public AVHWDeviceType HwDecodeDeviceType { get; }
-    
+    public AVHWDeviceType HwDecodeDeviceType { get; } = options.Value.HwDecodeDeviceType;
+
     private AVCodecContext* _pCodecContext;
     private AVFormatContext* _pFormatContext;
     private AVFrame* _pFrame;
     private AVPacket* _pPacket;
     private AVFrame* _receivedFrame;
     private int _streamIndex;
-    
-    public VideoStreamDecoder(ILogger<VideoStreamDecoder> logger, IOptions<FfmpegOptions> options)
-    {
-        _logger = logger;
-        _timeout = options.Value.Timeout;
-        HwDecodeDeviceType = options.Value.HwDecodeDeviceType;
-    }
 
     public void Initialize(string url, AVDictionary* options = null, Guid? instanceId = null)
     {
         _instanceId = instanceId ?? Guid.NewGuid();
-        _logger.LogInformation("Stream instance: {id}; Creating VideoStreamDecoder.", _instanceId);
+        logger.LogInformation("Stream instance: {id}; Creating VideoStreamDecoder.", _instanceId);
 
         var success = FFmpegExtensions.RunWithTimeout(_timeout, () =>
         {
@@ -81,11 +74,11 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
         });
         if (!success)
         {
-            _logger.LogError("Stream instance: {id}; Timeout while initializing VideoStreamDecoder.", _instanceId);
+            logger.LogError("Stream instance: {id}; Timeout while initializing VideoStreamDecoder.", _instanceId);
             throw new FFmpegInitException("Timeout while initializing VideoStreamDecoder.");
         }
 
-        _logger.LogInformation("Stream instance: {id}; VideoStreamDecoder initialized successfully.", _instanceId);
+        logger.LogInformation("Stream instance: {id}; VideoStreamDecoder initialized successfully.", _instanceId);
         
         _initialized = true;
     }
@@ -95,7 +88,7 @@ public sealed unsafe class VideoStreamDecoder : IDisposable
         if (!_initialized)
             return;
         
-        _logger.LogInformation("Stream instance: {id}; Disposing VideoStreamDecoder.", _instanceId);
+        logger.LogInformation("Stream instance: {id}; Disposing VideoStreamDecoder.", _instanceId);
 
         var pFrame = _pFrame;
         ffmpeg.av_frame_free(&pFrame);

@@ -107,13 +107,13 @@ public sealed class StreamPlayer
             // ReSharper disable once InlineTemporaryVariable
             var destinationSize = sourceSize;
             const AVPixelFormat destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;
-            using var vfc =
-                new VideoFrameConverter(_loggerFactory,
-                    sourceSize,
-                    sourcePixelFormat,
-                    destinationSize,
-                    destinationPixelFormat,
-                    _instanceId);
+            
+            using var vfc = _serviceProvider.GetRequiredService<VideoFrameConverter>();
+            vfc.Initialize(sourceSize,
+                sourcePixelFormat,
+                destinationSize,
+                destinationPixelFormat,
+                _instanceId);
 
             var started = false;
             try

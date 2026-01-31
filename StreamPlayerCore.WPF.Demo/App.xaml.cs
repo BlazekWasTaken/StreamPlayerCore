@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using StreamPlayerCore.Helper;
@@ -35,7 +34,8 @@ public partial class App
             options.LogLevel = (int)FFmpegLogLevel.AvLogQuiet;
         });
         
-         serviceCollection.TryAddScoped<StreamPlayerControl>();
+        serviceCollection.AddScoped<VideoStreamDecoder>();
+        serviceCollection.AddScoped<VideoFrameConverter>();
         serviceCollection.AddScoped<FfmpegLogger>();
         serviceCollection.AddScoped<StreamPlayer>();
         serviceCollection.AddScoped<StreamPlayerControl>();
