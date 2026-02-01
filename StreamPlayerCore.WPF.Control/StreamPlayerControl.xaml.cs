@@ -3,9 +3,8 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using FFmpeg.AutoGen;
-using Microsoft.Extensions.Logging;
-using StreamPlayerCore.Helper;
+using Microsoft.Extensions.DependencyInjection;
+using StreamPlayerCore.Enums;
 
 namespace StreamPlayerCore.WPF.Control;
 
@@ -13,26 +12,28 @@ public delegate void StreamStarted();
 
 public delegate void StreamStopped(StreamStopReason reason);
 
+public class PlayerOptions
+{
+    public RtspTransport Transport { get; set; } = RtspTransport.Tcp;
+    public RtspFlags Flags { get; set; } = RtspFlags.None;
+    public int AnalyzeDuration { get; set; } = 0;
+    public int ProbeSize { get; set; } = 65536;
+}
+
 public partial class StreamPlayerControl
 {
+    // ReSharper disable once MemberCanBePrivate.Global
+    public PlayerOptions Options { get; } = new();
+    
     private readonly StreamPlayer _player;
-    private readonly TimeSpan _timeout;
 
-    public StreamPlayerControl(ILoggerFactory loggerFactory, TimeSpan timeout,
-        RtspTransport transport = RtspTransport.Tcp, RtspFlags flags = RtspFlags.None,
-        int analyzeDuration = 0, int probeSize = 65536,
-        AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-        FFmpegLogLevel ffmpegLogLevel = FFmpegLogLevel.AvLogDebug)
+    public StreamPlayerControl(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
-        _timeout = timeout;
-        _player = new StreamPlayer(loggerFactory,
-            transport,
-            flags,
-            analyzeDuration,
-            probeSize,
-            hwDeviceType,
-            (int)ffmpegLogLevel);
+        
+        using var scope = serviceScopeFactory.CreateScope();
+        _player = scope.ServiceProvider.GetRequiredService<StreamPlayer>();
+        
         _player.FrameReadyEvent += Player_FrameReadyEvent;
         _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
         _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
@@ -43,12 +44,16 @@ public partial class StreamPlayerControl
 
     public void StartStream(string url)
     {
-        _player.Start(new Uri(url), _timeout);
+        _player.Start(new Uri(url),
+            Options.Transport,
+            Options.Flags,
+            Options.AnalyzeDuration,
+            Options.ProbeSize);
     }
 
     public void StopStream()
     {
-        _player.Stop();
+        _player?.Stop();
     }
 
     [DllImport("gdi32.dll")]

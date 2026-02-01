@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using StreamPlayerCore.WPF.Control;
 
 namespace StreamPlayerCore.WPF.Demo;
@@ -9,21 +9,23 @@ namespace StreamPlayerCore.WPF.Demo;
 /// </summary>
 public partial class MainWindow
 {
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+    
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
 
-    public MainWindow(ILoggerFactory loggerFactory)
+    public MainWindow(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
-        _loggerFactory = loggerFactory;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     private void BtnStart1_OnClick(object sender, RoutedEventArgs e)
     {
         if (_player1 != null) return;
         var rtspUrl = TbUrl1.Text;
-        _player1 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(5));
+        using var scope = _serviceScopeFactory.CreateScope();
+        _player1 = scope.ServiceProvider.GetRequiredService<StreamPlayerControl>();
         _player1.StreamStartedEvent += () => { };
         _player1.StreamStoppedEvent += reason =>
         {
@@ -44,7 +46,8 @@ public partial class MainWindow
     {
         if (_player2 != null) return;
         var rtspUrl = TbUrl2.Text;
-        _player2 = new StreamPlayerControl(_loggerFactory, TimeSpan.FromSeconds(5));
+        using var scope = _serviceScopeFactory.CreateScope();
+        _player2 = scope.ServiceProvider.GetRequiredService<StreamPlayerControl>();
         _player2.StreamStartedEvent += () => { };
         _player2.StreamStoppedEvent += reason =>
         {

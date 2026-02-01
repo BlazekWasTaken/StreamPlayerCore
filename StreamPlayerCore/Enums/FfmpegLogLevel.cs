@@ -1,6 +1,6 @@
-﻿namespace StreamPlayerCore.Helper;
+﻿namespace StreamPlayerCore.Enums;
 
-public enum FFmpegLogLevel
+public enum FfmpegLogLevel
 {
     AvLogDebug = 0x30,
     AvLogError = 0x10,

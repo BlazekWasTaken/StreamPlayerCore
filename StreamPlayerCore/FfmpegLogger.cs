@@ -2,22 +2,23 @@
 using System.Runtime.InteropServices;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using StreamPlayerCore.Options;
 
 namespace StreamPlayerCore;
 
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
-public class FFmpegLogger
+public class FfmpegLogger(ILogger<FfmpegLogger> logger, IOptions<FfmpegOptions> ffmpegOptions)
 {
-    private readonly Guid _instanceId;
-    private readonly av_log_set_callback_callback _logCallback;
+    private Guid _instanceId;
+    private av_log_set_callback_callback? _logCallback;
+    
+    private readonly int _ffmpegLogLevel = ffmpegOptions.Value.LogLevel;
 
-    private readonly ILogger<FFmpegLogger> _logger;
-
-    public unsafe FFmpegLogger(ILoggerFactory loggerFactory, int ffmpegLogLevel, Guid instanceId)
+    public unsafe void Initialize(Guid? instanceId = null)
     {
-        _instanceId = instanceId;
-        _logger = loggerFactory.CreateLogger<FFmpegLogger>();
-
+        _instanceId = instanceId ?? Guid.NewGuid();
+        
         _logCallback = (p0, level, format, vl) =>
         {
             if (level > ffmpeg.av_log_get_level()) return;
@@ -32,7 +33,7 @@ public class FFmpegLogger
             Log(line.Trim(), level);
         };
 
-        SetupLogging(ffmpegLogLevel);
+        SetupLogging();
     }
 
     private void Log(string message, int level)
@@ -41,38 +42,38 @@ public class FFmpegLogger
         {
             case ffmpeg.AV_LOG_PANIC:
             case ffmpeg.AV_LOG_FATAL:
-                _logger.LogCritical("Stream instance: {id}; FFmpeg {level}: {message}",
+                logger.LogCritical("Stream instance: {id}; FFmpeg {level}: {message}",
                     _instanceId,
                     LogLevelToString(level),
                     message);
                 break;
             case ffmpeg.AV_LOG_ERROR:
-                _logger.LogError("Stream instance: {id}; FFmpeg {level}: {message}",
+                logger.LogError("Stream instance: {id}; FFmpeg {level}: {message}",
                     _instanceId,
                     LogLevelToString(level),
                     message);
                 break;
             case ffmpeg.AV_LOG_WARNING:
-                _logger.LogWarning("Stream instance: {id}; FFmpeg {level}: {message}",
+                logger.LogWarning("Stream instance: {id}; FFmpeg {level}: {message}",
                     _instanceId,
                     LogLevelToString(level),
                     message);
                 break;
             case ffmpeg.AV_LOG_INFO:
-                _logger.LogInformation("Stream instance: {id}; FFmpeg {level}: {message}",
+                logger.LogInformation("Stream instance: {id}; FFmpeg {level}: {message}",
                     _instanceId,
                     LogLevelToString(level),
                     message);
                 break;
             case ffmpeg.AV_LOG_DEBUG:
-                _logger.LogDebug("Stream instance: {id}; FFmpeg {level}: {message}",
+                logger.LogDebug("Stream instance: {id}; FFmpeg {level}: {message}",
                     _instanceId,
                     LogLevelToString(level),
                     message);
                 break;
             case ffmpeg.AV_LOG_VERBOSE:
             case ffmpeg.AV_LOG_TRACE:
-                _logger.LogTrace("Stream instance: {id}; FFmpeg {level}: {message}",
+                logger.LogTrace("Stream instance: {id}; FFmpeg {level}: {message}",
                     _instanceId,
                     LogLevelToString(level),
                     message);
@@ -80,14 +81,14 @@ public class FFmpegLogger
         }
     }
 
-    private void SetupLogging(int ffmpegLogLevel)
+    private void SetupLogging()
     {
-        ffmpeg.av_log_set_level(ffmpegLogLevel);
+        ffmpeg.av_log_set_level(_ffmpegLogLevel);
 
-        _logger.LogInformation("Stream instance: {id}; FFmpeg logging set up with level: {logLevel} ({ffmpegLogLevel})",
+        logger.LogInformation("Stream instance: {id}; FFmpeg logging set up with level: {logLevel} ({ffmpegLogLevel})",
             _instanceId,
-            LogLevelToString(ffmpegLogLevel),
-            ffmpegLogLevel);
+            LogLevelToString(_ffmpegLogLevel),
+            _ffmpegLogLevel);
 
         ffmpeg.av_log_set_callback(_logCallback);
     }

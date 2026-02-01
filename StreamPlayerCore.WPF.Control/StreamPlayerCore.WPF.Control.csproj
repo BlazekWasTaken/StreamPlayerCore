@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
         <PackageId>StreamPlayerCore.WPF.Control</PackageId>
-        <Version>2.1.5</Version>
+        <Version>3.0.0</Version>
         <Title>StreamPlayerCore.WPF.Control</Title>
         <Authors>Błażej Dymek</Authors>
         <Description>WPF control for video streaming based on FFmpeg.AutoGen</Description>
@@ -23,7 +23,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\StreamPlayerCore.Helper\StreamPlayerCore.Helper.csproj"/>
         <ProjectReference Include="..\StreamPlayerCore\StreamPlayerCore.csproj"/>
     </ItemGroup>
 

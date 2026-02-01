@@ -19,6 +19,33 @@ Install-Package StreamPlayerCore.WPF.Control
 For a complete example of using the StreamPlayerCore WPF control, please refer to
 the [StreamPlayerCore.WPF.Demo](https://github.com/BlazekWasTaken/StreamPlayerCore/tree/2.1.5/StreamPlayerCore.WPF.Demo) project.
 
+This project is meant to be used with a Dependency Injection (DI) container. To configure the required services,
+you can use the following code snippet in your application startup:
+
+```csharp
+
+using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
+using StreamPlayerCore.WPF.Control;
+
+namespace StreamPlayerCore.WPF.Demo;
+
+public partial class App
+{
+    private void App_OnStartup(object sender, StartupEventArgs e)
+    {
+        var serviceCollection = new ServiceCollection();
+        
+        serviceCollection.AddStreamPlayerCoreServices();
+        serviceCollection.AddSingleton<MainWindow>();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        
+        var mainWindow = serviceProvider.GetRequiredService<MainWindow>();
+        mainWindow.Show();
+    }
+
+```
+
 To use the StreamPlayerCore WPF control, it is recommended to add a DockPanel to your window and place the
 StreamPlayerCore control inside it programatically.
 
@@ -44,12 +71,13 @@ namespace StreamPlayerCore.WPF.Demo
     {
         private StreamPlayerControl _streamPlayer;
 
-        public MainWindow()
+        public MainWindow(IServiceScopeFactory serviceScopeFactory)
         {
             InitializeComponent();
 
-            _streamPlayer = new StreamPlayerControl();
-            DpPlayer1.Children.Add(_streamPlayerWPF);
+            using var scope = _serviceScopeFactory.CreateScope();
+            _streamPlayer = scope.ServiceProvider.GetRequiredService<StreamPlayerControl>();
+            DpPlayer1.Children.Add(_streamPlayer);
             _streamPlayer.StartStream("rtsp://your_stream_url");
         }
     }

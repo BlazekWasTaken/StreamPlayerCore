@@ -1,6 +1,5 @@
-﻿using FFmpeg.AutoGen;
-using Microsoft.Extensions.Logging;
-using StreamPlayerCore.Helper;
+﻿using Microsoft.Extensions.DependencyInjection;
+using StreamPlayerCore.Enums;
 
 namespace StreamPlayerCore.WinForms.Control;
 
@@ -8,22 +7,29 @@ public delegate void StreamStarted();
 
 public delegate void StreamStopped(StreamStopReason reason);
 
-public sealed partial class StreamPlayerControl : System.Windows.Forms.Control
+public class PlayerOptions
 {
-    private readonly Lock _currentFrameLock = new();
-    private readonly StreamPlayer _player;
-    private readonly TimeSpan _timeout;
-    private Bitmap? _currentFrame;
+    public RtspTransport Transport { get; set; } = RtspTransport.Tcp;
+    public RtspFlags Flags { get; set; } = RtspFlags.None;
+    public int AnalyzeDuration { get; set; } = 0;
+    public int ProbeSize { get; set; } = 65536;
+}
 
-    public StreamPlayerControl(ILoggerFactory loggerFactory, TimeSpan timeout,
-        RtspTransport transport = RtspTransport.Tcp, RtspFlags flags = RtspFlags.None,
-        int analyzeDuration = 0, int probeSize = 65536,
-        AVHWDeviceType hwDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-        FFmpegLogLevel ffmpegLogLevel = FFmpegLogLevel.AvLogQuiet)
+public sealed partial class StreamPlayerControl : UserControl
+{
+    // ReSharper disable once MemberCanBePrivate.Global
+    public PlayerOptions Options { get; } = new();
+    
+    private readonly StreamPlayer _player;
+    
+    private readonly Lock _currentFrameLock = new();
+    private Bitmap? _currentFrame;
+    
+    public StreamPlayerControl(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
         DoubleBuffered = true;
-        _timeout = timeout;
+        
         Paint += (_, e) =>
         {
             lock (_currentFrameLock)
@@ -32,24 +38,25 @@ public sealed partial class StreamPlayerControl : System.Windows.Forms.Control
                 e.Graphics.DrawImage(_currentFrame, 0, 0);
             }
         };
-        _player = new StreamPlayer(loggerFactory,
-            transport,
-            flags,
-            analyzeDuration,
-            probeSize,
-            hwDeviceType,
-            (int)ffmpegLogLevel);
+
+        using var scope = serviceScopeFactory.CreateScope();
+        _player = scope.ServiceProvider.GetRequiredService<StreamPlayer>();
+        
         _player.FrameReadyEvent += Player_FrameReadyEvent;
         _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
         _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
     }
-
+    
     public event StreamStarted? StreamStartedEvent;
     public event StreamStopped? StreamStoppedEvent;
-
+    
     public void StartStream(string url)
     {
-        _player.Start(new Uri(url), _timeout);
+        _player.Start(new Uri(url), 
+            Options.Transport,
+            Options.Flags,
+            Options.AnalyzeDuration,
+            Options.ProbeSize);
     }
 
     public void StopStream()

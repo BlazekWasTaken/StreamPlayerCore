@@ -19,6 +19,34 @@ Install-Package StreamPlayerCore.WinForms.Control
 For a complete example of using the StreamPlayerCore WinForms control, please refer to
 the [StreamPlayerCore.WinForms.Demo](https://github.com/BlazekWasTaken/StreamPlayerCore/tree/2.1.5/StreamPlayerCore.WinForms.Demo) project.
 
+This project is meant to be used with a Dependency Injection (DI) container. To configure the required services,
+you can use the following code snippet in your application startup:
+
+```csharp
+
+using Microsoft.Extensions.DependencyInjection;
+using StreamPlayerCore.WinForms.Control;
+
+namespace StreamPlayerCore.WinForms.Demo;
+
+internal static class Program
+{
+    [STAThread]
+    private static void Main()
+    {
+        ApplicationConfiguration.Initialize();
+        
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddStreamPlayerCoreServices();
+        serviceCollection.AddSingleton<DemoForm>();
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        
+        Application.Run(serviceProvider.GetRequiredService<DemoForm>());
+    }
+}
+
+```
+
 To use the StreamPlayerCore WinForms control, it is recommended to add a Panel to your window and place the
 StreamPlayerCore control inside it programatically.
 
@@ -31,11 +59,11 @@ namespace StreamPlayerCore.WinForms.Demo
     {
         private StreamPlayerControl _streamPlayer;
 
-        public MainForm()
+        public MainForm(IServiceScopeFactory serviceScopeFactory)
         {
             InitializeComponent();
 
-            _streamPlayer = new StreamPlayerControl();
+            _streamPlayer = new StreamPlayerControl(serviceScopeFactory);
             _streamPlayer.Dock = DockStyle.Fill;
             panelPlayer1.Controls.Add(_streamPlayer);
             _streamPlayer.StartStream("rtsp://your_stream_url");
