@@ -3,7 +3,6 @@
 [![NuGet](https://img.shields.io/badge/NuGet-StreamPlayerCore-004880?logo=nuget&logoColor=fff)](https://www.nuget.org/packages/StreamPlayerCore/)
 [![NuGet](https://img.shields.io/badge/NuGet-StreamPlayerCore.WPF.Control-004880?logo=nuget&logoColor=fff)](https://www.nuget.org/packages/StreamPlayerCore.WPF.Control/)
 [![NuGet](https://img.shields.io/badge/NuGet-StreamPlayerCore.WinForms.Control-004880?logo=nuget&logoColor=fff)](https://www.nuget.org/packages/StreamPlayerCore.WinForms.Control/)
-[![NuGet](https://img.shields.io/badge/NuGet-StreamPlayerCore.Helper-004880?logo=nuget&logoColor=fff)](https://www.nuget.org/packages/StreamPlayerCore.Helper/)
 
 ## Components
 

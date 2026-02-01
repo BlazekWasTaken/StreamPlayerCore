@@ -1,6 +1,5 @@
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using StreamPlayerCore.Enums;
@@ -32,16 +31,13 @@ internal static class Program
             loggingBuilder.ClearProviders();
             loggingBuilder.AddSerilog(serilogLogger);
         });
-        
         serviceCollection.AddStreamPlayerCoreServices(new FfmpegOptions
         {
             LogLevel = (int)FfmpegLogLevel.AvLogDebug,
             HwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
             Timeout = TimeSpan.FromSeconds(10)
         });
-        
         serviceCollection.AddSingleton<DemoForm>();
-        
         var serviceProvider = serviceCollection.BuildServiceProvider();
         
         Application.Run(serviceProvider.GetRequiredService<DemoForm>());
