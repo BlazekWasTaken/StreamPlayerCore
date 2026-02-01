@@ -43,6 +43,7 @@ partial class DemoForm
         // 
         // panel1
         // 
+        panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
         panel1.Location = new System.Drawing.Point(12, 12);
         panel1.Name = "panel1";
         panel1.Size = new System.Drawing.Size(640, 480);

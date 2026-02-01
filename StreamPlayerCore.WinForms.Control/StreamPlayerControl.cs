@@ -15,7 +15,7 @@ public class PlayerOptions
     public int ProbeSize { get; set; } = 65536;
 }
 
-public sealed partial class StreamPlayerControl : System.Windows.Forms.Control
+public sealed partial class StreamPlayerControl : UserControl
 {
     // ReSharper disable once MemberCanBePrivate.Global
     public PlayerOptions Options { get; } = new();
@@ -24,7 +24,7 @@ public sealed partial class StreamPlayerControl : System.Windows.Forms.Control
     
     private readonly Lock _currentFrameLock = new();
     private Bitmap? _currentFrame;
-
+    
     public StreamPlayerControl(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
@@ -46,10 +46,10 @@ public sealed partial class StreamPlayerControl : System.Windows.Forms.Control
         _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
         _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
     }
-
+    
     public event StreamStarted? StreamStartedEvent;
     public event StreamStopped? StreamStoppedEvent;
-
+    
     public void StartStream(string url)
     {
         _player.Start(new Uri(url), 
