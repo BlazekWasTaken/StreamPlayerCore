@@ -17,40 +17,33 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        Application.SetHighDpiMode(HighDpiMode.SystemAware);
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
+        ApplicationConfiguration.Initialize();
         
-        var host = CreateHostBuilder().Build();
-        var serviceProvider = host.Services;
+        var serviceCollection = new ServiceCollection();
+        
+        var serilogLogger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.File("log.txt", rollingInterval: RollingInterval.Minute)
+            .WriteTo.Console()
+            .CreateLogger();
+        
+        serviceCollection.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.ClearProviders();
+            loggingBuilder.AddSerilog(serilogLogger);
+        });
+        
+        serviceCollection.AddStreamPlayerCoreServices(new FfmpegOptions
+        {
+            LogLevel = (int)FfmpegLogLevel.AvLogDebug,
+            HwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
+            Timeout = TimeSpan.FromSeconds(10)
+        });
+        
+        serviceCollection.AddSingleton<DemoForm>();
+        
+        var serviceProvider = serviceCollection.BuildServiceProvider();
         
         Application.Run(serviceProvider.GetRequiredService<DemoForm>());
-    }
-
-    private static IHostBuilder CreateHostBuilder()
-    {
-        return Host.CreateDefaultBuilder()
-            .ConfigureServices((context, services) => {
-                var serilogLogger = new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .WriteTo.File("log.txt", rollingInterval: RollingInterval.Minute)
-                    .WriteTo.Console()
-                    .CreateLogger();
-                
-                services.AddLogging(loggingBuilder =>
-                {
-                    loggingBuilder.ClearProviders();
-                    loggingBuilder.AddSerilog(serilogLogger);
-                });
-                
-                services.AddStreamPlayerCoreServices(new FfmpegOptions
-                {
-                    LogLevel = (int)FfmpegLogLevel.AvLogDebug,
-                    HwDecodeDeviceType = AVHWDeviceType.AV_HWDEVICE_TYPE_NONE,
-                    Timeout = TimeSpan.FromSeconds(10)
-                });
-                
-                services.AddSingleton<DemoForm>();
-            });
     }
 }
