@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PackageId>StreamPlayerCore</PackageId>
-        <Version>2.1.5</Version>
+        <Version>3.0.0</Version>
         <Title>StreamPlayerCore</Title>
         <Authors>Błażej Dymek</Authors>
         <Description>C# library for video streaming based on FFmpeg.AutoGen</Description>
