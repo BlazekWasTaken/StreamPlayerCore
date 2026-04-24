@@ -20,12 +20,13 @@ public sealed class StreamPlayer
     private readonly Guid _instanceId = Guid.NewGuid();
     private readonly ILogger<StreamPlayer> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    
+
     private bool _started;
 
     private CancellationTokenSource _tokenSource = new();
 
-    public StreamPlayer(ILogger<StreamPlayer> logger, FfmpegLogger ffmpegLogger, IServiceScopeFactory serviceScopeFactory)
+    public StreamPlayer(ILogger<StreamPlayer> logger, FfmpegLogger ffmpegLogger,
+        IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
@@ -37,7 +38,7 @@ public sealed class StreamPlayer
             _instanceId,
             ffmpeg.RootPath,
             ffmpeg.av_version_info());
-        
+
         ffmpegLogger.Initialize(_instanceId);
     }
 
@@ -107,7 +108,7 @@ public sealed class StreamPlayer
             // ReSharper disable once InlineTemporaryVariable
             var destinationSize = sourceSize;
             const AVPixelFormat destinationPixelFormat = AVPixelFormat.AV_PIX_FMT_BGRA;
-            
+
             using var vfc = scope.ServiceProvider.GetRequiredService<VideoFrameConverter>();
             vfc.Initialize(sourceSize,
                 sourcePixelFormat,
@@ -161,10 +162,7 @@ public sealed class StreamPlayer
     private static unsafe AVDictionary* GetAvDict(Dictionary<string, string> options)
     {
         AVDictionary* optionsPtr = null;
-        foreach (var (key, value) in options)
-        {
-            ffmpeg.av_dict_set(&optionsPtr, key, value, 0);
-        }
+        foreach (var (key, value) in options) ffmpeg.av_dict_set(&optionsPtr, key, value, 0);
         return optionsPtr;
     }
 

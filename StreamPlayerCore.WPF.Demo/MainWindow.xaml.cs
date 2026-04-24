@@ -10,7 +10,7 @@ namespace StreamPlayerCore.WPF.Demo;
 public partial class MainWindow
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    
+
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
 
@@ -29,7 +29,7 @@ public partial class MainWindow
         _player1.Options.Add("rtsp_transport", "tcp");
         _player1.Options.Add("analyzeduration", "0");
         _player1.Options.Add("probesize", "65536");
-        
+
         _player1.StreamStartedEvent += () => { };
         _player1.StreamStoppedEvent += reason =>
         {
@@ -55,7 +55,7 @@ public partial class MainWindow
         _player2.Options.Add("rtsp_transport", "udp");
         _player2.Options.Add("analyzeduration", "0");
         _player2.Options.Add("probesize", "65536");
-        
+
         _player2.StreamStartedEvent += () => { };
         _player2.StreamStoppedEvent += reason =>
         {

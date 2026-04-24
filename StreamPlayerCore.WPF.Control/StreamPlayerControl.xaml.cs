@@ -14,22 +14,22 @@ public delegate void StreamStopped(StreamStopReason reason);
 
 public partial class StreamPlayerControl
 {
-    // ReSharper disable once MemberCanBePrivate.Global
-    public Dictionary<string, string> Options { get; } = new();
-    
     private readonly StreamPlayer _player;
 
     public StreamPlayerControl(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
-        
+
         using var scope = serviceScopeFactory.CreateScope();
         _player = scope.ServiceProvider.GetRequiredService<StreamPlayer>();
-        
+
         _player.FrameReadyEvent += Player_FrameReadyEvent;
         _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
         _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
     }
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public Dictionary<string, string> Options { get; } = new();
 
     public event StreamStarted? StreamStartedEvent;
     public event StreamStopped? StreamStoppedEvent;

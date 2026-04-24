@@ -9,19 +9,16 @@ public delegate void StreamStopped(StreamStopReason reason);
 
 public sealed partial class StreamPlayerControl : UserControl
 {
-    // ReSharper disable once MemberCanBePrivate.Global
-    public Dictionary<string, string> Options { get; } = new();
-    
-    private readonly StreamPlayer _player;
-    
     private readonly Lock _currentFrameLock = new();
+
+    private readonly StreamPlayer _player;
     private Bitmap? _currentFrame;
-    
+
     public StreamPlayerControl(IServiceScopeFactory serviceScopeFactory)
     {
         InitializeComponent();
         DoubleBuffered = true;
-        
+
         Paint += (_, e) =>
         {
             lock (_currentFrameLock)
@@ -33,15 +30,18 @@ public sealed partial class StreamPlayerControl : UserControl
 
         using var scope = serviceScopeFactory.CreateScope();
         _player = scope.ServiceProvider.GetRequiredService<StreamPlayer>();
-        
+
         _player.FrameReadyEvent += Player_FrameReadyEvent;
         _player.StreamStartedEvent += () => { StreamStartedEvent?.Invoke(); };
         _player.StreamStoppedEvent += reason => { StreamStoppedEvent?.Invoke(reason); };
     }
-    
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public Dictionary<string, string> Options { get; } = new();
+
     public event StreamStarted? StreamStartedEvent;
     public event StreamStopped? StreamStoppedEvent;
-    
+
     public void StartStream(string url)
     {
         _player.Start(new Uri(url), Options);

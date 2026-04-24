@@ -17,15 +17,15 @@ internal static class Program
     private static void Main()
     {
         ApplicationConfiguration.Initialize();
-        
+
         var serviceCollection = new ServiceCollection();
-        
+
         var serilogLogger = new LoggerConfiguration()
             .MinimumLevel.Information()
             .WriteTo.File("log.txt", rollingInterval: RollingInterval.Minute)
             .WriteTo.Console()
             .CreateLogger();
-        
+
         serviceCollection.AddLogging(loggingBuilder =>
         {
             loggingBuilder.ClearProviders();
@@ -39,7 +39,7 @@ internal static class Program
         });
         serviceCollection.AddSingleton<DemoForm>();
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        
+
         Application.Run(serviceProvider.GetRequiredService<DemoForm>());
     }
 }

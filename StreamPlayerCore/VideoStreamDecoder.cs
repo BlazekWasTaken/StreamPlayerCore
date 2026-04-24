@@ -20,15 +20,10 @@ namespace StreamPlayerCore;
 public sealed unsafe class VideoStreamDecoder(ILogger<VideoStreamDecoder> logger, IOptions<FfmpegOptions> options)
     : IDisposable
 {
+    private readonly Stopwatch _stopwatch = new();
+    private readonly TimeSpan _timeout = options.Value.Timeout;
     private bool _initialized;
     private Guid _instanceId;
-    private readonly TimeSpan _timeout = options.Value.Timeout;
-    private readonly Stopwatch _stopwatch = new();
-    
-    public string CodecName { get; private set; } = string.Empty;
-    public Size FrameSize { get; private set; }
-    public AVPixelFormat PixelFormat { get; private set; }
-    public AVHWDeviceType HwDecodeDeviceType { get; } = options.Value.HwDecodeDeviceType;
 
     private AVCodecContext* _pCodecContext;
     private AVFormatContext* _pFormatContext;
@@ -36,6 +31,31 @@ public sealed unsafe class VideoStreamDecoder(ILogger<VideoStreamDecoder> logger
     private AVPacket* _pPacket;
     private AVFrame* _receivedFrame;
     private int _streamIndex;
+
+    public string CodecName { get; private set; } = string.Empty;
+    public Size FrameSize { get; private set; }
+    public AVPixelFormat PixelFormat { get; private set; }
+    public AVHWDeviceType HwDecodeDeviceType { get; } = options.Value.HwDecodeDeviceType;
+
+    public void Dispose()
+    {
+        if (!_initialized)
+            return;
+
+        logger.LogInformation("Stream instance: {id}; Disposing VideoStreamDecoder.", _instanceId);
+
+        var pFrame = _pFrame;
+        ffmpeg.av_frame_free(&pFrame);
+
+        var pPacket = _pPacket;
+        ffmpeg.av_packet_free(&pPacket);
+
+        var avCodecContext = stackalloc[] { _pCodecContext };
+        ffmpeg.avcodec_free_context(avCodecContext);
+
+        var pFormatContext = _pFormatContext;
+        ffmpeg.avformat_close_input(&pFormatContext);
+    }
 
     public void Initialize(string url, AVDictionary* options = null, Guid? instanceId = null)
     {
@@ -79,37 +99,17 @@ public sealed unsafe class VideoStreamDecoder(ILogger<VideoStreamDecoder> logger
         }
 
         logger.LogInformation("Stream instance: {id}; VideoStreamDecoder initialized successfully.", _instanceId);
-        
+
         _initialized = true;
-    }
-
-    public void Dispose()
-    {
-        if (!_initialized)
-            return;
-        
-        logger.LogInformation("Stream instance: {id}; Disposing VideoStreamDecoder.", _instanceId);
-
-        var pFrame = _pFrame;
-        ffmpeg.av_frame_free(&pFrame);
-
-        var pPacket = _pPacket;
-        ffmpeg.av_packet_free(&pPacket);
-
-        var avCodecContext = stackalloc[] { _pCodecContext };
-        ffmpeg.avcodec_free_context(avCodecContext);
-
-        var pFormatContext = _pFormatContext;
-        ffmpeg.avformat_close_input(&pFormatContext);
     }
 
     public bool TryDecodeNextFrame(out AVFrame frame)
     {
         _stopwatch.Restart();
-        
+
         if (!_initialized)
             throw new InvalidOperationException("VideoStreamDecoder is not initialized.");
-        
+
         ffmpeg.av_frame_unref(_pFrame);
         ffmpeg.av_frame_unref(_receivedFrame);
         int error;
@@ -153,15 +153,17 @@ public sealed unsafe class VideoStreamDecoder(ILogger<VideoStreamDecoder> logger
         {
             frame = *_pFrame;
         }
-        
+
         _stopwatch.Stop();
         var elapsedMs = _stopwatch.ElapsedMilliseconds;
-        logger.LogDebug("Stream instance: {id}; VideoStreamDecoder decoded frame in {elapsedMs} ms.", _instanceId, elapsedMs);
-        
+        logger.LogDebug("Stream instance: {id}; VideoStreamDecoder decoded frame in {elapsedMs} ms.", _instanceId,
+            elapsedMs);
+
         var framerate = _pFormatContext->streams[_streamIndex]->avg_frame_rate;
-        logger.LogDebug("Stream instance: {id}; VideoStreamDecoder framerate: {num}/{den}", _instanceId, framerate.num, framerate.den);
+        logger.LogDebug("Stream instance: {id}; VideoStreamDecoder framerate: {num}/{den}", _instanceId, framerate.num,
+            framerate.den);
         if (framerate.den == 0 || framerate.num == 0) return true;
-        
+
         var fps = framerate.num / (double)framerate.den;
         var wait = 1000 / (int)fps - (int)elapsedMs;
         logger.LogDebug("Stream instance: {id}; VideoStreamDecoder waiting for: {time}", _instanceId, wait);

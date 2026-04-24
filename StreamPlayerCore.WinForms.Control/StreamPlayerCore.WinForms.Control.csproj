@@ -32,9 +32,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="StreamPlayerControl.cs">
-        <SubType>UserControl</SubType>
-      </Compile>
+        <Compile Update="StreamPlayerControl.cs">
+            <SubType>UserControl</SubType>
+        </Compile>
     </ItemGroup>
 
 </Project>

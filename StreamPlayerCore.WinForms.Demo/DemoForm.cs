@@ -6,7 +6,7 @@ namespace StreamPlayerCore.WinForms.Demo;
 public partial class DemoForm : Form
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    
+
     private StreamPlayerControl? _player1;
     private StreamPlayerControl? _player2;
 

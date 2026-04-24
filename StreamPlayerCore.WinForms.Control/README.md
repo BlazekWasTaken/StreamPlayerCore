@@ -17,7 +17,8 @@ Install-Package StreamPlayerCore.WinForms.Control
 ## Usage
 
 For a complete example of using the StreamPlayerCore WinForms control, please refer to
-the [StreamPlayerCore.WinForms.Demo](https://github.com/BlazekWasTaken/StreamPlayerCore/tree/2.1.5/StreamPlayerCore.WinForms.Demo) project.
+the [StreamPlayerCore.WinForms.Demo](https://github.com/BlazekWasTaken/StreamPlayerCore/tree/2.1.5/StreamPlayerCore.WinForms.Demo)
+project.
 
 This project is meant to be used with a Dependency Injection (DI) container. To configure the required services,
 you can use the following code snippet in your application startup:
@@ -74,4 +75,5 @@ namespace StreamPlayerCore.WinForms.Demo
 
 ## License
 
-This project is licensed under the LGPLv3 License. See the [LICENSE](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.5/LICENSE) file for details.
+This project is licensed under the LGPLv3 License. See
+the [LICENSE](https://github.com/BlazekWasTaken/StreamPlayerCore/blob/2.1.5/LICENSE) file for details.

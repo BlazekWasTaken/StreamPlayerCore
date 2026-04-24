@@ -10,15 +10,14 @@ namespace StreamPlayerCore;
 [SuppressMessage("Performance", "CA1873:Avoid potentially expensive logging")]
 public class FfmpegLogger(ILogger<FfmpegLogger> logger, IOptions<FfmpegOptions> ffmpegOptions)
 {
+    private readonly int _ffmpegLogLevel = ffmpegOptions.Value.LogLevel;
     private Guid _instanceId;
     private av_log_set_callback_callback? _logCallback;
-    
-    private readonly int _ffmpegLogLevel = ffmpegOptions.Value.LogLevel;
 
     public unsafe void Initialize(Guid? instanceId = null)
     {
         _instanceId = instanceId ?? Guid.NewGuid();
-        
+
         _logCallback = (p0, level, format, vl) =>
         {
             if (level > ffmpeg.av_log_get_level()) return;
