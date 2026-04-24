@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using FFmpeg.AutoGen;
 using Microsoft.Extensions.Logging;
@@ -20,10 +21,9 @@ public sealed unsafe class VideoStreamDecoder(ILogger<VideoStreamDecoder> logger
     : IDisposable
 {
     private bool _initialized;
-    
     private Guid _instanceId;
-
     private readonly TimeSpan _timeout = options.Value.Timeout;
+    private readonly Stopwatch _stopwatch = new();
     
     public string CodecName { get; private set; } = string.Empty;
     public Size FrameSize { get; private set; }
@@ -105,6 +105,8 @@ public sealed unsafe class VideoStreamDecoder(ILogger<VideoStreamDecoder> logger
 
     public bool TryDecodeNextFrame(out AVFrame frame)
     {
+        _stopwatch.Restart();
+        
         if (!_initialized)
             throw new InvalidOperationException("VideoStreamDecoder is not initialized.");
         
@@ -151,6 +153,19 @@ public sealed unsafe class VideoStreamDecoder(ILogger<VideoStreamDecoder> logger
         {
             frame = *_pFrame;
         }
+        
+        _stopwatch.Stop();
+        var elapsedMs = _stopwatch.ElapsedMilliseconds;
+        logger.LogDebug("Stream instance: {id}; VideoStreamDecoder decoded frame in {elapsedMs} ms.", _instanceId, elapsedMs);
+        
+        var framerate = _pFormatContext->streams[_streamIndex]->avg_frame_rate;
+        logger.LogDebug("Stream instance: {id}; VideoStreamDecoder framerate: {num}/{den}", _instanceId, framerate.num, framerate.den);
+        if (framerate.den == 0 || framerate.num == 0) return true;
+        
+        var fps = framerate.num / (double)framerate.den;
+        var wait = 1000 / (int)fps - (int)elapsedMs;
+        logger.LogDebug("Stream instance: {id}; VideoStreamDecoder waiting for: {time}", _instanceId, wait);
+        if (wait > 0) Thread.Sleep(wait);
 
         return true;
     }
