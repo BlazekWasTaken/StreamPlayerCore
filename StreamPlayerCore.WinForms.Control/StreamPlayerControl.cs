@@ -7,18 +7,10 @@ public delegate void StreamStarted();
 
 public delegate void StreamStopped(StreamStopReason reason);
 
-public class PlayerOptions
-{
-    public RtspTransport Transport { get; set; } = RtspTransport.Tcp;
-    public RtspFlags Flags { get; set; } = RtspFlags.None;
-    public int AnalyzeDuration { get; set; } = 0;
-    public int ProbeSize { get; set; } = 65536;
-}
-
 public sealed partial class StreamPlayerControl : UserControl
 {
     // ReSharper disable once MemberCanBePrivate.Global
-    public PlayerOptions Options { get; } = new();
+    public Dictionary<string, string> Options { get; } = new();
     
     private readonly StreamPlayer _player;
     
@@ -52,11 +44,7 @@ public sealed partial class StreamPlayerControl : UserControl
     
     public void StartStream(string url)
     {
-        _player.Start(new Uri(url), 
-            Options.Transport,
-            Options.Flags,
-            Options.AnalyzeDuration,
-            Options.ProbeSize);
+        _player.Start(new Uri(url), Options);
     }
 
     public void StopStream()

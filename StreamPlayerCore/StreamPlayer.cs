@@ -45,8 +45,7 @@ public sealed class StreamPlayer
     public event StreamStarted? StreamStartedEvent;
     public event StreamStopped? StreamStoppedEvent;
 
-    public unsafe void Start(Uri streamSource, RtspTransport transport = RtspTransport.Undefined, 
-        RtspFlags flags = RtspFlags.None, int analyzeDuration = 0, int probeSize = 65536)
+    public unsafe void Start(Uri streamSource, Dictionary<string, string> options)
     {
         if (_started) return;
         _started = true;
@@ -65,7 +64,7 @@ public sealed class StreamPlayer
         {
             var scope = _serviceScopeFactory.CreateScope();
             VideoStreamDecoder? vsd = null;
-            var optionsPtr = GetAvDict(transport, flags, analyzeDuration, probeSize);
+            var optionsPtr = GetAvDict(options);
             try
             {
                 vsd = scope.ServiceProvider.GetRequiredService<VideoStreamDecoder>();
@@ -159,48 +158,13 @@ public sealed class StreamPlayer
         OnStreamStopped(reason);
     }
 
-    private static unsafe AVDictionary* GetAvDict(RtspTransport transport, RtspFlags flags, int analyzeDuration,
-        int probeSize)
+    private static unsafe AVDictionary* GetAvDict(Dictionary<string, string> options)
     {
         AVDictionary* optionsPtr = null;
-        switch (transport)
+        foreach (var (key, value) in options)
         {
-            case RtspTransport.Http:
-                ffmpeg.av_dict_set(&optionsPtr, "rtsp_transport", "http", 0);
-                break;
-            case RtspTransport.Udp:
-                ffmpeg.av_dict_set(&optionsPtr, "rtsp_transport", "udp", 0);
-                break;
-            case RtspTransport.Tcp:
-                ffmpeg.av_dict_set(&optionsPtr, "rtsp_transport", "tcp", 0);
-                break;
-            case RtspTransport.UdpMulticast:
-                ffmpeg.av_dict_set(&optionsPtr, "rtsp_transport", "udp_multicast", 0);
-                break;
-            case RtspTransport.Undefined:
-            default:
-                break;
+            ffmpeg.av_dict_set(&optionsPtr, key, value, 0);
         }
-
-        switch (flags)
-        {
-            case RtspFlags.FilterSrc:
-                ffmpeg.av_dict_set(&optionsPtr, "rtsp_flags", "filter_src", 0);
-                break;
-            case RtspFlags.Listen:
-                ffmpeg.av_dict_set(&optionsPtr, "rtsp_flags", "listen", 0);
-                break;
-            case RtspFlags.PreferTcp:
-                ffmpeg.av_dict_set(&optionsPtr, "rtsp_flags", "prefer_tcp", 0);
-                break;
-            case RtspFlags.None:
-            default:
-                break;
-        }
-
-        ffmpeg.av_dict_set(&optionsPtr, "analyzeduration", analyzeDuration.ToString(), 0);
-        ffmpeg.av_dict_set(&optionsPtr, "probesize", probeSize.ToString(), 0);
-
         return optionsPtr;
     }
 
